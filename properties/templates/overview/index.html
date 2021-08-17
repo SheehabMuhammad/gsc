@@ -1,0 +1,238 @@
+{% extends 'base-admin.html' %}
+
+{% block content-area %}
+
+<div class="container-xxl">
+
+    <div class="row">
+
+        <div class="col-md-8">
+
+            <div class="widget welcome-widget mb-4">
+                <div class="widget-content">
+
+                    <div class="row text-white text-lato">
+                        <div class="col-12 col-md-6">
+                            <h3>{% if user.is_authenticated %}Hello, {{ user.username }}.{% endif %}</h3>
+                            <p class="text-small">Welcome to your Dashboard! You have 0 Properties
+                                with 0 URLs scraped from Google Search Console today</p>
+
+                            <div class="d-flex mb-2">
+                                <i class="fad fa-globe-americas widget-icon"></i>
+                                <span class="text-small ml-3 mb-0">16 Total Properties</span>
+                            </div>
+
+                            <div class="d-flex mb-2">
+                                <i class="fad fa-link widget-icon"></i>
+                                <span class="text-small ml-3 mb-0"></i>145 Total URLs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="widget mb-4">
+
+                <div class="widget-header">
+                    <div class="labels">
+                        <h3 class="title text-lato">GSC Data Scraping Overview</h3>
+                        <span class="text-tiny text-secondary">Since last week</span>
+                    </div>
+
+                    <div class="actions">
+                        <a href="{% url 'urls' %}" class="btn btn-small btn-dark">
+                            <i class="fad fa-link"></i> Browse URLs
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-content">
+                    <div id="analytics" style="height: 300px;"></div>
+                </div>
+
+                <script>
+                    // Chart in Dashboard version 1
+                    var analytics = document.getElementById('analytics');
+
+                    if (analytics) {
+                        analyticsElement = echarts.init(analytics);
+
+                        option = {
+                            animation: true,
+                            legend: {
+                                show: true,
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                            },
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['July 29', 'July 30', 'July 31', 'August 01', 'August 02', 'August 03', 'August 04', 'August 05', 'August 06', 'August 07', 'August 08', 'August 09', 'August 10', 'August 11', 'August 12', 'August 13'],
+                                axisLabel: {
+                                    color: '#999999',
+                                    fontSize: 10,
+                                    padding: [7, 0, 0, 0]
+                                },
+                                axisLine: {
+                                    show: false,
+                                },
+                                axisTick: {
+                                    show: false
+                                }
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                show: true,
+                                axisLabel: {
+                                    color: '#999999',
+                                    fontSize: 10
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        opacity: 0.05
+                                    }
+                                }
+                            }],
+                            grid: {
+                                left: 0,
+                                top: 30,
+                                right: 15,
+                                bottom: 7,
+                                containLabel: true
+                            },
+                            series: [
+
+                                {
+                                    name: 'New URLs',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'circle',
+                                    showSymbol: false,
+                                    itemStyle: {
+                                        color: '#26C994'
+                                    },
+                                    data: [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                }
+                            ]
+                        };
+
+                        // use configuration item and data specified to show chart
+                        analyticsElement.setOption(option);
+
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- main contents end-->
+
+        <!-- Right Sidebar Contents-->
+        <div class="col-md-4">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-12 col-lg-6">
+                    <div class="card text-emerald">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="widget-icon">
+                                    <i class="fad fa-globe-americas" aria-hidden="true"></i>
+                                </div>
+                                <div class="" style="font-weight: bold; font-size: 22px;">
+                                    16 </div>
+                            </div>
+                            <h5 class="mb-0" style="font-weight: 400;font-size: 14px;">Properties</h5>
+                            <div class="text-tiny">Since last month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="card text-emerald">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between  mb-4">
+                                <div class="widget-icon">
+                                    <i class="fad fa-link" aria-hidden="true"></i>
+                                </div>
+                                <div class="" style="font-weight: bold;font-size: 22px;">
+                                    58 </div>
+
+                            </div>
+                            <h5 class="mb-0" style="font-weight: 400;font-size: 14px;">URLs</h5>
+                            <div class="text-tiny">Since last month</div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-12 col-lg-6">
+                    <div class="card text-light-blue">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="widget-icon">
+                                    <i class="fad fa-users" aria-hidden="true"></i>
+                                </div>
+                                <div class="" style="font-weight: bold; font-size: 22px;">
+                                    16 </div>
+                            </div>
+                            <h5 class="mb-0" style="font-weight: 400;font-size: 14px;">Users</h5>
+                            <div class="text-tiny">Since last month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="card text-light-blue">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between  mb-4">
+                                <div class="widget-icon">
+                                    <i class="fad fa-eye" aria-hidden="true"></i>
+                                </div>
+                                <div class="" style="font-weight: bold;font-size: 22px;">
+                                    58 </div>
+
+                            </div>
+                            <h5 class="mb-0" style="font-weight: 400;font-size: 14px;">Scheduled Jobs</h5>
+                            <div class="text-tiny">for next run</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="widget mb-4">
+                <div class="widget-header mb-3">
+                    <div class="labels">
+                        <h3 class="title text-lato">Users</h3>
+                    </div>
+                    <div class="actions">
+                        <a href="/admin/auth/user/" class="btn btn-small">See all</a>
+                    </div>
+                </div>
+                <div class="widget-content">
+                    <div class="users-widget d-flex justify-content-around text-center">
+                        {% for user in users %}
+                        <div class="d-flex flex-column">
+                            <img class="user-icon"
+                                src="https://www.gravatar.com/avatar/b96378ce7d8c6af2347821115cc9b71b?s=80&d=mp&r=g"
+                                alt="">
+                            <a href="#" class="user-name">{{ user.username }}</a>
+                            <span class="user-role">Admin</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

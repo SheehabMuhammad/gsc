@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="guest-wrapper">
+
+    <div class="auth-container">
+
+        <div class="contents">
+
+            <p class="auth-welcome">Welcome</p>
+
+            <p class="text-normal">To access your dashboard, please login with your email and password.</p>
+            <!-- Session Status -->
+
+
+            <!-- Validation Errors -->
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+            </ul>
+            {% endif %}
+            <!-- /Validation Errors -->
+
+            <!-- Login Form -->
+            <form class="login-form row g-3 pb-3" method="POST" action="">
+                {% csrf_token %}
+                <!-- Email Address -->
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="text-marguerite input-group-text" id="inputEmailLabel"><i class="fad fa-user"
+                                aria-hidden="true"></i></span>
+                        <input id="loginEmail" class="form-control" type="text" name="username"
+                            aria-describedby="inputEmailLabel" placeholder="Enter e-mail" required="" autofocus="">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="col-12">
+                    <div class="input-group">
+
+                        <span class="text-marguerite input-group-text" id="inputGroupPrepend2"><i class="fad fa-lock"
+                                aria-hidden="true"></i></span>
+                        <input id="validationDefaultUsername" class="form-control" type="password" name="password"
+                            aria-describedby="inputGroupPrepend2" required="" placeholder="Enter password"
+                            autocomplete="current-password">
+
+                    </div>
+                </div>
+
+                <div class="col-12 my-1">
+                    <div class="row py-2">
+
+                        <!-- Remember Me -->
+                        <div class="col-sm-6 text-left">
+                            <label for="remember_me" class="checkbox text-small">
+                                <input id="remember_me" class="form-checkbox" type="checkbox" name="remember">
+                                <span class="ml-2 text-normal">Remember me</span>
+                            </label>
+                        </div>
+
+                        <!-- Forgot password -->
+                        <div class="col-sm-6">
+                            <a class="text-normal" href="forgot-password">Forgot your password?</a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Login Button -->
+                <div class="col-12">
+                    <button type="submit" class="btn btn-rounded bg-marguerite custom-button-font px-4">Login</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

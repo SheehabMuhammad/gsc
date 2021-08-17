@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="root" class="wrapper">
+
+    {% include 'navigation.html' %}
+
+    <div class="content-area dark-scheme px-3 py-4">
+
+        {% block content-area %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+{% endblock %}

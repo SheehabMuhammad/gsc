@@ -21,7 +21,4 @@ admin.site.site_header = "GSC Admin"
 admin.site.site_title = "GSC Admin Portal"
 admin.site.index_title = "Welcome to GSC Portal"
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('properties/', include('properties.urls'))
-]
+urlpatterns = [path("admin/", admin.site.urls), path("", include("properties.urls"))]

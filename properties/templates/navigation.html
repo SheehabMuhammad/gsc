@@ -1,0 +1,87 @@
+<aside class="sidebar-left with-navigation">
+
+    <div class="contents-top">
+        <a class="" href="/">
+            <h1 class="nav-branding "><i class="fad fa-chart-bar"></i>
+                <span> GSC Dashboard </span>
+            </h1>
+        </a>
+    </div>
+
+
+    <div class="contents-middle main-menu">
+
+        {% with request.resolver_match.url_name as url_name %}
+
+        <ul class="nav vertical-navigation flex-column">
+
+            <li class="nav-item has-divider">
+                <a class="nav-link {% if url_name == 'index' %}is-active{% endif %}" href="{% url 'index' %}">
+                    <i class="fad fa-swatchbook"></i>
+                    <span class="nav-text">Overview</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if url_name == 'properties' %}is-active{% endif %}" href="{% url 'properties' %}">
+                    <i class="fas fa-globe-americas"></i>
+                    <span class="nav-text">Properties</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if url_name == 'urls' %}is-active{% endif %}" href="{% url 'urls' %}">
+                    <i class="fad fa-link"></i>
+                    <span class="nav-text">URLs</span>
+                </a>
+            </li>
+
+            <li class="nav-item  has-divider">
+                <a class="nav-link {% if url_name == 'scheduled-job' %}is-active{% endif %}" href="{% url 'index' %}">
+                    <i class="fad fa-clock"></i>
+                    <span class="nav-text">Scheduled Job</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if url_name == 'scheduled-log' %}is-active{% endif %}" href="{% url 'index' %}">
+                    <i class="fad fa-clipboard-list"></i>
+                    <span class="nav-text">Job Log</span>
+                </a>
+            </li>
+
+            <li class="nav-item  has-divider">
+                <a class="nav-link {% if url_name == 'users' %}is-active{% endif %}" href="/admin/auth/user/">
+                    <i class="fad fa-users-cog"></i>
+                    <span class="nav-text">Manage Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if url_name == 'account' %}is-active{% endif %}"
+                    href="/admin/auth/user/{{ user.id }}">
+                    <i class="fad fa-user"></i>
+                    <span class="nav-text">Account</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if url_name == 'admin' %}is-active{% endif %}" href="{% url 'admin:index' %}">
+                    <i class="fad fa-sliders-h-square"></i><span class="nav-text">Settings</span>
+                </a>
+            </li>
+
+        </ul>
+        {% endwith %}
+    </div>
+
+
+    <div class="contents-bottom">
+        <ul class="nav vertical-navigation flex-column">
+
+            <li class="nav-item has-divider">
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fad fa-sign-out"></i><span class="nav-text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</aside>
