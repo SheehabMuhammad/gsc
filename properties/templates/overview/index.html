@@ -12,8 +12,13 @@
             <div class="widget mb-4">
                 <div class="widget-header mb-3">
                     <div class="labels">
-                        <h3 class="title text-lato">All Activity</h3>
+                        <h3 class="title text-lato">Recent Activities</h3>
                         <span class="text-tiny text-secondary">Scraper logs</span>
+                    </div>
+                    <div class="actions">
+                        <a href="{% url 'logs' %}" class="btn btn-small btn-dark">
+                            <i class="fad fa-clipboard-list"></i> See all
+                        </a>
                     </div>
                 </div>
                 <div class="widget-content">
@@ -23,7 +28,9 @@
                             <i class="fad fa-clipboard-list"></i>
                         </div>
                         <div class="p-2" style="flex-grow: 1;">
-                            Property ID: {{ log.property_id }}
+                            <a class="text-emerald" href="{% url 'property_urls' log.property_id %}">
+                                Property ID: {{ log.property_id }}</a>
+
                         </div>
                         <div class="p-2" style="flex-grow: 1;">
                             Scraped URLs: {{ log.num_urls }}

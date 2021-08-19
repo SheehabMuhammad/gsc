@@ -55,6 +55,22 @@ def index(request):
 
 @login_required(login_url="/login/")
 def properties(request):
+
+    if request.method == "POST":
+        name = request.POST["name"]
+        property = request.POST["property"]
+        if name and property:
+            try:
+                property = Property(
+                    name=name, property=property, owner_id=request.user.id
+                )
+                property.save()
+                messages.success(request, "Property registred.")
+            except Exception as e:
+                messages.error(request, "Property already exists.")
+        else:
+            messages.error(request, "Property could not be registered.")
+
     properties = Property.objects.all()
     return render(request, "properties/index.html", {"properties": properties})
 
@@ -84,7 +100,7 @@ def property_urls(request, property_id):
 
     properties = Property.objects.all()
 
-    urls = Url.objects.all()
+    urls = property.url_set.all()
 
     # Show 25 contacts per page
     paginator = Paginator(urls, 1000)
