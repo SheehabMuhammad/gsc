@@ -13,6 +13,7 @@ urlpatterns = [
     ),
     path("urls/", views.urls, name="urls"),
     path("urls/<int:url_id>/", views.url, name="url"),
+    path("logs", views.logs, name="logs"),
     path("login/", views.user_login, name="login"),
     path("logout/", views.user_logout, name="logout"),
 ]

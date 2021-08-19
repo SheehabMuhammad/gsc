@@ -1,0 +1,65 @@
+{% extends 'base-admin.html' %}
+
+{% block content-area %}
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-lg-12 col-md-12">
+
+            <div class="widget mb-4">
+
+                <div class="widget-header">
+                    <div class="labels">
+                        <h3 class="title text-lato">Google SC Scraper Logs</h3>
+                        <span class="text-tiny text-secondary">in ascending order.</span>
+                    </div>
+                </div>
+
+                <div class="widget-content">
+                    <div class="table-responsive">
+                        <table class="table table-list">
+
+                            <thead class="list-header">
+                                <tr>
+                                    <th><span>#</span></th>
+                                    <th><span>Property</span></th>
+                                    <th><span>Number of URLs</span></th>
+                                    <th><span>Status</span></th>
+                                    <th><span>Time Taken</span></th>
+                                    <th><span>GSC Scraped at</span></th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="list-body text-small text-normal">
+
+                                {% for log in logs %}
+                                <tr>
+                                    <td>
+                                        <span class="rank text-emerald">{{ log.id }}</span>
+                                    </td>
+                                    <td>{{ log.property }}</td>
+                                    <td>{{ log.num_urls }}</td>
+                                    <td>{{ log.status }}</td>
+                                    <td>{{ log.time_taken }}</td>
+                                    <td>{{ log.created_at }}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}

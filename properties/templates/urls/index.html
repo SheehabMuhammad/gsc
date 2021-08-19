@@ -64,7 +64,7 @@
                     </div>
                     <div class="actions">
                         {% if property.name %}
-                        <a href="{% url 'property_scrape' property.id %}" class="btn btn-small btn-dark">
+                        <a href="{% url 'property_scrape' property.id %}" class="btn btn-small btn-emerald">
                             <i class="fad fa-cloud-download" aria-hidden="true"></i> Fetch Now
                         </a>
                         {% endif %}
@@ -75,7 +75,7 @@
                     <div class="table-responsive">
                         <table class="table table-list">
                             <thead>
-                                <tr class="text-small text-gray">
+                                <tr class="text-small list-header">
                                     <th scope="col">#</th>
                                     <th scope="col">URL</th>
                                     <th scope="col">Coverage Type</th>
@@ -89,10 +89,10 @@
                                     <th scope="col">Crested At</th>
                                 </tr>
                             </thead>
-                            <tbody class="list-body text-small text-gray">
+                            <tbody class="list-body text-small">
                                 {% for url in urls %}
                                 <tr>
-                                    <th scope="row">{{ url.id }}</th>
+                                    <th scope="row" class="text-emerald">{{ url.id }}</th>
                                     <td>{{ url.url }}</td>
 
                                     <td>{{ url.c_type }}</td>

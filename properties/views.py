@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.urls import reverse
 
-from .models import Property, Url
+from .models import Property, Url, Log
 
 
 def user_login(request):
@@ -41,29 +41,43 @@ def index(request):
     users = User.objects.all()
     user_num = users.count()
 
-    context = {"properties": properties, "user_num": user_num, "users": users}
+    logs = Log.objects.all()
+
+    context = {
+        "properties": properties,
+        "user_num": user_num,
+        "users": users,
+        "logs": logs,
+    }
 
     return render(request, "overview/index.html", context)
 
 
+@login_required(login_url="/login/")
 def properties(request):
     properties = Property.objects.all()
     return render(request, "properties/index.html", {"properties": properties})
 
 
+@login_required(login_url="/login/")
 def property(request, property_id):
     property = Property.objects.all()
     return render(request, "properties/index.html", {"property": property})
 
 
+@login_required(login_url="/login/")
 def property_scrape(request, property_id):
     property = Property.objects.get(pk=property_id)
-    property.crawl_priority = "high"
+    property.scrape_priority = "high"
     property.save()
-    properties = Property.objects.all()
-    return render(request, "properties/index.html", {"properties": properties})
+    messages.info(
+        request,
+        "Property tranferred to high priority scraper, scraping will be completed in next minutes.",
+    )
+    return redirect(reverse("properties"))
 
 
+@login_required(login_url="/login/")
 def property_urls(request, property_id):
 
     property = Property.objects.get(id=property_id)
@@ -94,6 +108,7 @@ def property_urls(request, property_id):
     )
 
 
+@login_required(login_url="/login/")
 def urls(request):
     properties = Property.objects.all()
 
@@ -117,6 +132,13 @@ def urls(request):
     return render(request, "urls/index.html", {"urls": urls, "properties": properties})
 
 
+@login_required(login_url="/login/")
+def logs(request):
+    logs = Log.objects.all()
+    return render(request, "logs/index.html", {"logs": logs})
+
+
+@login_required(login_url="/login/")
 def url(request, url_id):
     url = Url.objects.all()
     return render(request, "url/index.html", {"url": url})

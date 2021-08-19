@@ -8,8 +8,8 @@ class Property(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     options = models.TextField(blank=True)
-    crawl_priority = models.CharField(max_length=100, default="low")
-    last_crawled = models.DateTimeField(null=True, blank=True)
+    scrape_priority = models.CharField(max_length=100, default="low")
+    last_scraped = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -46,15 +46,9 @@ class Url(models.Model):
         ]
 
 
-class Option(models.Model):
+class Log(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    value = models.CharField(max_length=255)
+    num_urls = models.IntegerField(default=0, null=True)
+    time_taken = models.CharField(max_length=255)
+    status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "Options"
