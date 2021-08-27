@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 
 
 class Property(models.Model):
-    name = models.CharField(max_length=100)
     property = models.URLField(unique=True)
+    resource_id = models.TextField(blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     options = models.TextField(blank=True)
@@ -48,6 +48,21 @@ class Url(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["property", "url"], name="unique property url constraint"
+            )
+        ]
+
+
+class Filter(models.Model):
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.value
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "value"], name="unique filter constraint"
             )
         ]
 

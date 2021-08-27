@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -9,10 +10,9 @@ from django.db.models import Q, Count
 from django.db.models.functions import TruncDay
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.utils.timezone import make_aware
 import pytz
 
-from .models import Property, Url, Log
+from .models import Property, Url, Log, Filter
 
 
 def user_login(request):
@@ -26,6 +26,8 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
+                # Syncing Url filters
+                sync_filters(request)
                 return redirect(reverse("index"))
             else:
                 messages.error(request, "Your account is disabled.")
@@ -78,15 +80,20 @@ def index(request):
 @login_required(login_url="/login/")
 def properties(request):
 
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
 
     if request.method == "POST":
-        name = request.POST["name"]
+
         property = request.POST["property"]
-        if name and property:
+        type = request.POST["type"]
+        if type and property:
+            if type == "domain":
+                resource_id = "sc-domain:" + property
+            else:
+                resource_id = property
             try:
                 property = Property(
-                    name=name, property=property, owner_id=request.user.id
+                    property=property, resource_id=resource_id, owner_id=request.user.id
                 )
                 property.save()
                 messages.success(request, "Property registred.")
@@ -101,8 +108,7 @@ def properties(request):
 
 @login_required(login_url="/login/")
 def property(request, property_id):
-
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.all()
     return render(request, "properties/index.html", {"property": property})
@@ -110,7 +116,7 @@ def property(request, property_id):
 
 @login_required(login_url="/login/")
 def property_scrape(request, property_id):
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.get(pk=property_id)
     property.scrape_priority = "high"
@@ -124,14 +130,31 @@ def property_scrape(request, property_id):
 
 @login_required(login_url="/login/")
 def property_urls(request, property_id):
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
+
     property = Property.objects.get(id=property_id)
-
     properties = Property.objects.all()
-
     urls = property.url_set.all()
+    filters = Filter.objects.all()
 
-    # Show 25 contacts per page
+    c_type = request.GET.getlist("c_type[]")
+    c_status = request.GET.getlist("c_status[]")
+    mu_type = request.GET.getlist("mu_type[]")
+    mu_status = request.GET.getlist("mu_status[]")
+    search = request.GET.get("search")
+
+    if c_type:
+        urls = urls.filter(c_type__in=c_type)
+    if c_status:
+        urls = urls.filter(c_status__in=c_status)
+    if mu_type:
+        urls = urls.filter(mu_type__in=mu_type)
+    if mu_status:
+        urls = urls.filter(mu_status__in=mu_status)
+    if search:
+        urls = urls.filter(url__icontains=search)
+
+    # Show 1000 urls per page
     paginator = Paginator(urls, 1000)
 
     page = request.GET.get("page")
@@ -150,6 +173,12 @@ def property_urls(request, property_id):
         "property": property,
         "urls": urls,
         "properties": properties,
+        "filters": filters,
+        "c_status": c_status,
+        "c_type": c_type,
+        "mu_status": mu_status,
+        "mu_type": mu_type,
+        "search": search,
         "show_selector": True,
     }
 
@@ -158,25 +187,31 @@ def property_urls(request, property_id):
 
 @login_required(login_url="/login/")
 def urls(request):
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
-    properties = Property.objects.all()
+    timezone.activate(pytz.timezone("America/Chicago"))
 
+    properties = Property.objects.all()
     urls = Url.objects.all()
 
-    c_status = Url.objects.order_by().values_list("c_status", flat=True).distinct()
+    filters = Filter.objects.all()
 
-    print(c_status)
-    print("sheehab")
-
-    coverage_status = request.GET.getlist("coverage_status[]")
+    c_type = request.GET.getlist("c_type[]")
+    c_status = request.GET.getlist("c_status[]")
+    mu_type = request.GET.getlist("mu_type[]")
+    mu_status = request.GET.getlist("mu_status[]")
     search = request.GET.get("search")
 
-    if coverage_status:
-        urls = urls.filter(c_status__in=coverage_status)
-
+    if c_type:
+        urls = urls.filter(c_type__in=c_type)
+    if c_status:
+        urls = urls.filter(c_status__in=c_status)
+    if mu_type:
+        urls = urls.filter(mu_type__in=mu_type)
+    if mu_status:
+        urls = urls.filter(mu_status__in=mu_status)
     if search:
         urls = urls.filter(url__icontains=search)
 
+    # Show 1000 urls per page
     paginator = Paginator(urls, 1000)
 
     page = request.GET.get("page")
@@ -194,8 +229,11 @@ def urls(request):
     context = {
         "properties": properties,
         "urls": urls,
-        "c_statuses": c_status,
-        "coverage_status": coverage_status,
+        "filters": filters,
+        "c_status": c_status,
+        "c_type": c_type,
+        "mu_status": mu_status,
+        "mu_type": mu_type,
         "search": search,
         "show_selector": True,
     }
@@ -205,13 +243,47 @@ def urls(request):
 
 @login_required(login_url="/login/")
 def logs(request):
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
     logs = Log.objects.all()
     return render(request, "logs/index.html", {"logs": logs})
 
 
 @login_required(login_url="/login/")
 def url(request, url_id):
-    timezone.activate(pytz.timezone("Asia/Dhaka"))
+    timezone.activate(pytz.timezone("America/Chicago"))
     url = Url.objects.all()
     return render(request, "url/index.html", {"url": url})
+
+
+def sync_filters(request):
+    c_status = Url.objects.order_by().values_list("c_status", flat=True).distinct()
+    for status in c_status:
+        try:
+            filter = Filter.objects.get(name="c_status", value=status)
+        except ObjectDoesNotExist:
+            filter = Filter(name="c_status", value=status)
+            filter.save()
+
+    c_type = Url.objects.order_by().values_list("c_type", flat=True).distinct()
+    for status in c_type:
+        try:
+            filter = Filter.objects.get(name="c_type", value=status)
+        except ObjectDoesNotExist:
+            filter = Filter(name="c_type", value=status)
+            filter.save()
+
+    mu_status = Url.objects.order_by().values_list("mu_status", flat=True).distinct()
+    for status in mu_status:
+        try:
+            filter = Filter.objects.get(name="mu_status", value=status)
+        except ObjectDoesNotExist:
+            filter = Filter(name="mu_status", value=status)
+            filter.save()
+
+    mu_type = Url.objects.order_by().values_list("mu_type", flat=True).distinct()
+    for status in mu_type:
+        try:
+            filter = Filter.objects.get(name="mu_type", value=status)
+        except ObjectDoesNotExist:
+            filter = Filter(name="mu_type", value=status)
+            filter.save()

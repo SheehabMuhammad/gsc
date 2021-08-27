@@ -175,6 +175,11 @@ a.text-emerald:hover {
     overflow: hidden;
 }
 
+.filter-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #26C994;
+}
 
 /* Left Sidebar Styles*/
 

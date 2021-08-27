@@ -7,7 +7,7 @@ from .models import Property, Url
 
 class PropertyAdmin(admin.ModelAdmin):
     # inlines = [UrlInline]
-    list_display = ("name", "property", "description", "created_at", "updated_at")
+    list_display = ("property", "description", "created_at", "updated_at")
 
 
 class UrlAdmin(admin.ModelAdmin):

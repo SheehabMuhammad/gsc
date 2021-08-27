@@ -49,86 +49,71 @@
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p style="font-size: 14px;">Select Coverage Type</p>
+                                        <p class="filter-label">Select Coverage Type</p>
+                                        {% for filter in filters %}
+                                        {% if filter.name == 'c_type' %}
                                         <div class="form-check">
-                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
-                                                value="" id="filter-1">
-                                            <label class="form-check-label" for="filter-1">
-                                                Excluded by ‘noindex’ tag
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
-                                                value="" id="filter-2">
-                                            <label class="form-check-label" for="filter-2">
-                                                Crawled - currently not indexed
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
-                                                value="" id="filter-3">
-                                            <label class="form-check-label" for="filter-3">
-                                                Page with redirect
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
-                                                value="" id="filter-4">
-                                            <label class="form-check-label" for="filter-4">
-                                                Submitted and indexed
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <p style="font-size: 14px;">Select Coverage Status</p>
-                                        {% for filter in c_statuses %}
-                                        <div class="form-check">
-                                            <input {% if filter in coverage_status %} checked {% endif %}
-                                                name="coverage_status[]" class="form-check-input" type="checkbox"
-                                                value="{{ filter }}" id="c_{{ filter }}" />
-                                            <label class="form-check-label" for="c_{{ filter }}">
+                                            <input {% if filter.value in c_type %} checked {% endif %} name="c_type[]"
+                                                class="form-check-input" type="checkbox" value="{{ filter }}"
+                                                id="c_type{{ filter }}" />
+                                            <label class="form-check-label" for="c_type{{ filter }}">
                                                 {{ filter }}
                                             </label>
                                         </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <p class="filter-label">Select Coverage Status</p>
+                                        {% for filter in filters %}
+                                        {% if filter.name == 'c_status' %}
+                                        <div class="form-check">
+                                            <input {% if filter.value in c_status %} checked {% endif %}
+                                                name="c_status[]" class="form-check-input" type="checkbox"
+                                                value="{{ filter }}" id="c_status{{ filter }}" />
+                                            <label class="form-check-label" for="c_status{{ filter }}">
+                                                {{ filter }}
+                                            </label>
+                                        </div>
+                                        {% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
                             </div>
 
-
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p style="font-size: 14px;">Select Mobile Usability Type</p>
+                                        <p class="filter-label">Select Mobile Usability Type</p>
+                                        {% for filter in filters %}
+                                        {% if filter.name == 'mu_type' %}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="filter-9">
-                                            <label class="form-check-label" for="filter-9">
-                                                Mobile-friendly pages
+                                            <input {% if filter.value in mu_type %} checked {% endif %} name="mu_type[]"
+                                                class="form-check-input" type="checkbox" value="{{ filter }}"
+                                                id="mu_type{{ filter }}" />
+                                            <label class="form-check-label" for="mu_type{{ filter }}">
+                                                {{ filter }}
                                             </label>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="filter-10">
-                                            <label class="form-check-label" for="filter-10">
-                                                Not listed as mobile friendly
-                                            </label>
-                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
                                     </div>
 
                                     <div class="col-md-6">
-                                        <p style="font-size: 14px;">Select Mobile Usability Status</p>
+                                        <p class="filter-label">Select Mobile Usability Status</p>
+                                        {% for filter in filters %}
+                                        {% if filter.name == 'mu_status' %}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="filter-11">
-                                            <label class="form-check-label" for="filter-11">
-                                                Error
+                                            <input {% if filter.value in mu_status %} checked {% endif %}
+                                                name="mu_status[]" class="form-check-input" type="checkbox"
+                                                value="{{ filter }}" id="mu_status{{ filter }}" />
+                                            <label class="form-check-label" for="mu_status{{ filter }}">
+                                                {{ filter }}
                                             </label>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="filter-12">
-                                            <label class="form-check-label" for="filter-12">
-                                                Valid
-                                            </label>
-                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -157,7 +142,7 @@
                                     <th scope="col">Mobile Usablity Status</th>
                                     <th scope="col">Detected</th>
 
-                                    <th scope="col">Crested At</th>
+                                    <th scope="col">Created At</th>
                                 </tr>
                             </thead>
                             <tbody class="list-body text-small">
