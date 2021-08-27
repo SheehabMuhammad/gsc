@@ -74,6 +74,7 @@ def index(request):
     }
 
     print(urls_by_date)
+
     return render(request, "overview/index.html", context)
 
 

@@ -146,12 +146,12 @@
                                     <td class="text-emerald"
                                         style="max-width: 180px;overflow: hidden;text-overflow: ellipsis;">
                                         {{ log.property }}</td>
+                                    <td>Type: {{ log.type }}</td>
                                     <td>Scraped URLs: {{ log.num_urls }}</td>
-                                    <td>Priority: {{ log.scrape_priority }}</td>
+                                    <td>Duration: {{ log.time_taken }}</td>
                                     <td>
                                         {{ log.created_at|date:"m/d/y, h:ia" }}
                                     </td>
-
 
                                 </tr>
                                 {% endfor %}

@@ -69,7 +69,7 @@ class Filter(models.Model):
 
 class Log(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    domain = models.URLField(blank=True, null=True)
+    type = models.CharField(max_length=255, blank=True, null=True)
     num_urls = models.IntegerField(default=0, null=True)
     time_taken = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
