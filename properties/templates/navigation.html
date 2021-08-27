@@ -6,6 +6,41 @@
                 <span> GSC Dashboard </span>
             </h1>
         </a>
+        {% if show_selector %}
+        <div class="property-selector">
+            <div class="selected-property">
+                <div class="property-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+
+                <div class="property-details">
+
+                    <div class="property-category">
+                        Property
+                    </div>
+
+                    <div class="property-title">
+                        {% if property.property %}
+                        {{ property.property }}
+                        {% else %}
+                        Select a property
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <ul class="property-list">
+                {% for property in properties %}
+                <li class="property-item">
+                    <a href="{% url 'property_urls' property.id %}" class="property-link">
+                        {{ property.property }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
     </div>
 
 

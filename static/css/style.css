@@ -32,6 +32,7 @@ table th {
 
 
 /* Overrides */
+
 .form-switch .form-check-input {
     width: 36px;
     height: 22px;
@@ -61,6 +62,9 @@ table th {
     color: #26C994;
 }
 
+label  {
+    font-size: 13px;
+}
 
 /* Utilities */
 
@@ -99,6 +103,7 @@ a.text-emerald:hover {
 
 
 /* Background Colors */
+
 .bg-emerald {
     background-color: #26C994;
     color: #fff;
@@ -107,19 +112,19 @@ a.text-emerald:hover {
     background: #3ACBE9;
     color: #fff;
 }
-
 .bg-light-gray{
     background: #F7F7F7;
     color: #5A6474;
 }
-
 .list-icon {
     width: 45px;
     text-align: center;
     border-radius: 10px;
 }
 
+
 /* Button Styles */
+
 .btn-emerald{
     color: #fff;
     background-color: #26C994;
@@ -159,12 +164,10 @@ a.text-emerald:hover {
     font-weight: bold;
     margin-bottom: 0;
 }
-
 .wrapper {
     width: 100%;
     min-height: 100vh;
 }
-
 .content-area .card {
     border-radius: 10px;
     border: 1px solid #e0e0e1;
@@ -236,322 +239,6 @@ a.text-emerald:hover {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Messages */
-
-ul.messages {
-    list-style: none;
-    padding: 0;
-    font-size: 15px;
-}
-
-ul.messages li.error {
-    color: red;
-}
-
-
-/* Custom Menu */
-
-ul.custom-menu {
-    padding: 0;
-    list-style: none;
-    margin: 0;
-}
-
-ul.custom-menu  li a{
-    display: block;
-    color: #5A6474;
-    font-size: 14px;
-    padding: 3px 0px;
-}
-
-ul.custom-menu  li a:hover{
-    color: #6973C9;
-}
-
-
-
-
-
-/* Dashboard Pages */
-
-
-
-
-
-/* Property Switch CSS */
-.property-selector{
-    position: relative;
-}
-.selected-property {
-    display: flex;
-    background: #FFF;
-    border-radius: 10px;
-    min-width: 200px;
-    padding: 0.375rem 35px 0.375rem 0.575rem;
-    cursor: pointer;
-    position: relative;
-    /* box-shadow: 0px 0px 4px 0px #E7E9EB; */
-}
-.selected-property::before {
-    position: absolute;
-    border: solid #8A919D;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-    top: 17px;
-    right: 13px;
-    content: ' ';
-}
-.selected-property::after {
-    position: absolute;
-    border: solid #8A919D;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    bottom: 17px;
-    right: 13px;
-    content: ' ';
-}
-
-.selected-property .property-icon {
-    font-size: 22px;
-}
-.selected-property .property-details{
-    margin-left: 10px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-}
-.selected-property .property-title {
-    font-size: 0.8125rem;
-    font-weight: 500;
-}
-.selected-property .property-category {
-    font-size: 0.75rem;
-}
-.property-selector:hover .property-list{
-    display: block;
-}
-.property-selector .property-list {
-    display: none;
-    list-style: none;
-    padding: 10px;
-    background: #fff;
-    border-radius: 10px;
-    border: 1px solid rgba(100, 100, 100, 0.1);
-    position: absolute;
-    width: 100%;
-    z-index: 999;
-    margin: 0 auto;
-}
-.property-list .property-link {
-    padding: 5px 10px;
-    text-decoration: none;
-    color: #5A6474;
-    font-weight: 500;
-    font-size: 0.825rem;
-    cursor: pointer;
-    display: block;
-    border-radius: 5px;
-
-}
-.property-list .property-link:hover {
-    background-color: #E7E9EB;
-}
-
-
-
-/* List Generic CSS */
-
-.table-list tbody, .table-list td, .table-list tfoot, .table-list th, .table-list thead, .table-list tr {
-    border: none;
-}
-.table-list .list-header th {
-    text-transform: uppercase;
-    color: #888;
-    font-size: 14px;
-}
-.table-list .select-item{
-    width: 2.2em;
-}
-.table-list th, .table-list td {
-    vertical-align: middle;
-}
-.table-list tr {
-    border-left: 3px solid transparent;
-}
-.table-list .list-body tr:hover {
-    color: #26C994;
-    border-left: 3px solid #26C994;
-    cursor: pointer;
-}
-
-
-
-
-/* Statistics Widget CSS */
-.info-elem {
-    padding: 8px 20px;
-    font-size: 14px;
-}
-.stat-title {
-    color: #999;
-    margin-bottom: 1px;
-}
-
-
-
-/* Vistor List CSS */
-
-.visitor-card .card-header{
-    font-size: 0.75rem;
-    padding: .35rem 1rem;
-}
-
-
-
-
-
-/* USER LIST TABLE */
-
-.user-info-elem {
-
-    border: 1px solid #e3e3e3;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 1rem;
-    height: 64px;
-    width: 112px;
-}
-
-
-
-.user-list thead > tr > th span {
-    padding-bottom: 5px;
-    font-weight: normal;
-}
-.user-list tbody > tr > td {
-    font-size: 0.875em;
-    background: #f5f5f5;
-    border-top: 10px solid #fff;
-    vertical-align: middle;
-    padding: 8px 8px;
-}
-.table tbody > tr > td:first-child,
-.table thead > tr > th:first-child {
-    padding-left: 20px;
-}
-.user-list tbody td .user-icon {
-    max-width: 50px;
-    margin-right: 15px;
-    border-radius: 10px;
-}
-
-.user-list tbody td .user-links {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.user-list tbody td .username {
-    font-size: 1rem;
-}
-.user-list tbody td .user-subhead {
-    font-size: 0.875em;
-    font-style: italic;
-}
-
-.user-list tbody .user-item td:first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-.user-list tbody .user-item td:last-child {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-
-.user-item .action-button {
-    display: inline-block;
-    padding: 5px;
-}
-
-a.action-button {
-    text-decoration: none;
-    color: #6973c9;
-}
-
-a.action-button:hover {
-    text-decoration: none;
-    color: #2aa493;
-}
-a.action-button.danger {
-    color: #fe635f;
-}
-a.action-button.danger:hover {
-    color: #dd504c;
-}
-
-/* User Table end */
-
-
-
-
-/* Users Widget */
-
-.users-widget .user-icon  {
-    width: 40px;
-    margin: 0 auto;
-    border-radius: 20px;
-}
-.users-widget .user-name  {
-    margin-top: 4px;
-    font-size: 0.875rem;
-    color: inherit;
-}
-.users-widget .user-role  {
-    line-height: 1;
-    font-size: 0.75rem;
-    color: #808080;
-}
-
-/* Users Widget */
-
-
-
-
-/* Vertical Navigation */
-
-
-
-
 /* Content Area */
 
 .content-area {
@@ -580,7 +267,7 @@ a.action-button.danger:hover {
 
 .widget .widget-header .title {
     margin-bottom: 0rem;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .widget-icon {
@@ -590,54 +277,187 @@ a.action-button.danger:hover {
     align-items: center;
 }
 
-/* Welcome Widget */
 
-.widget.welcome-widget {
-    background-color: rgba(40, 200, 150, 0.8);
+
+
+/* Messages */
+
+ul.messages {
+    list-style: none;
+    padding: 0;
+    font-size: 15px;
 }
 
-.welcome-widget .widget-content{
-    background-image: url('../img/undraw_secure_data_0rwp.svg');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: right;
+ul.messages li.error {
+    color: red;
 }
 
 
+/* Property Switch CSS */
 
-.period-picker {
+.property-selector{
+    position: relative;
+    color: #6C757D;
+}
+.selected-property {
+    display: flex;
+    background: #FFF;
+    border-radius: 10px;
+    min-width: 186px;
+    padding: 0.375rem 25px 0.375rem 0.575rem;
+    cursor: pointer;
+    position: relative;
+    /* box-shadow: 0px 0px 4px 0px #E7E9EB; */
+    border: 1px solid rgba(100, 100, 100, 0.1);
+}
+.selected-property::before {
+    position: absolute;
+    border: solid #8A919D;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    top: 17px;
+    right: 10px;
+    content: ' ';
+}
+.selected-property::after {
+    position: absolute;
+    border: solid #8A919D;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    bottom: 17px;
+    right: 10px;
+    content: ' ';
+}
+.selected-property .property-icon {
+    font-size: 22px;
+}
+.selected-property .property-details{
+    margin-left: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    overflow: hidden;
+}
+.selected-property .property-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.selected-property .property-category {
+    font-size: 0.75rem;
+}
+.property-selector:hover .property-list{
+    display: block;
+}
+.property-selector .property-list {
+    display: none;
+    list-style: none;
+    padding: 5px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(100, 100, 100, 0.1);
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+    margin: 0 auto;
+    min-width: 186px;
+}
+.property-list .property-link {
+    padding: 5px 10px;
     text-decoration: none;
+    color: #5A6474;
+    font-weight: 500;
+    font-size: 0.825rem;
+    cursor: pointer;
+    display: block;
     border-radius: 5px;
-    padding: .235rem;
-    margin: .325rem;
-    color: #343a40;
-    font-size: .75rem;
-    border: 1px solid transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
-.period-picker.active,
-.period-picker:hover {
-    border-color: #999;
-}
-
-.top-item-stat{
-    font-weight: 400;
-    font-size: 20px;
-    margin-bottom: 0;
+.property-list .property-link:hover {
+    background-color: #E7E9EB;
 }
 
 
-/*Settings Page */
+/* List Generic CSS */
 
-.settings-tabs-container{
-    background: #eee;
-    border-radius: 1rem;
-    min-height: 550px;
+.table-list tbody, .table-list td, .table-list tfoot, .table-list th, .table-list thead, .table-list tr {
+    border: none;
+}
+.table-list .list-header th {
+    text-transform: uppercase;
+    color: #888;
+    font-size: 14px;
+}
+.table-list .select-item{
+    width: 2.2em;
+}
+.table-list th, .table-list td {
+    vertical-align: middle;
+}
+.table-list tr {
+    border-left: 3px solid transparent;
+}
+.table-list .list-body tr:hover {
+    color: #26C994;
+    border-left: 3px solid #26C994;
+    cursor: pointer;
 }
 
 
+/* Login Page */
 
-
+.guest-wrapper {
+    min-height: 100vh;
+    background: #0B0C0D;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.guest-wrapper .auth-container {
+    max-width: 800px;
+    width: 90%;
+    padding: 0px;
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #c4c4c421;
+    display: flex;
+    color: #fff;
+}
+.auth-container .contents {
+    padding: 60px 30px;
+    text-align: center;
+    max-width: 392px;
+    margin: 0 auto;
+}
+.auth-welcome{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.text-logo-white{
+    font-size: 44px;
+    font-weight: 700;
+    font-family: 'Roboto', sans-serif;
+}
+.text-logo{
+    font-size: 44px;
+    font-weight: 700;
+    color: #FFF;
+    font-family: 'Roboto', sans-serif;
+}
+.actions .form-select {
+    /* padding: .15rem 1.25rem .15rem .15rem; */
+    font-size: 0.75rem !important;
+}
 
 /* Device Responsiveness fix CSS */
 
@@ -676,68 +496,12 @@ a.action-button.danger:hover {
 
 
 
-/* Login Page */
-
-.guest-wrapper {
-    min-height: 100vh;
-    background: #0B0C0D;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.guest-wrapper .auth-container {
-    max-width: 800px;
-    width: 90%;
-    padding: 0px;
-    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-    background-color: #c4c4c421;
-    display: flex;
-    color: #fff;
-}
-
-.auth-container .contents {
-    padding: 60px 30px;
-    text-align: center;
-    max-width: 392px;
-    margin: 0 auto;
-}
-
-.auth-welcome{
-    font-family: 'Roboto', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.text-logo-white{
-    font-size: 44px;
-    font-weight: 700;
-    font-family: 'Roboto', sans-serif;
-}
-
-.text-logo{
-    font-size: 44px;
-    font-weight: 700;
-    color: #FFF;
-    font-family: 'Roboto', sans-serif;
-}
-
-.actions .form-select {
-    /* padding: .15rem 1.25rem .15rem .15rem; */
-    font-size: 0.75rem !important;
-}
-
-
 
 /* @media (prefers-color-scheme: dark) {
     .content-area{
         background:#161616;
         color:#CCCCCC;
     }
-    .content-area .card,
     .widget {
         background-color: #1B1B1B;
         border-color: #262626;
@@ -796,17 +560,14 @@ a.action-button.danger:hover {
         border-color: rgba(150, 150, 150, 0.2);
         background-color: transparent;
     }
-
     .actions .form-select {
         background-color: #212529;
         border: 1px solid #212529;
         color: #fff;
     }
-
     .actions .btn {
         color: #999;
     }
-
     .filters .form-select {
         background-color: transparent;
         border-bottom: 1px solid #212529;

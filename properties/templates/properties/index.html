@@ -15,26 +15,22 @@
                     <form method="POST" class="modal-content">
                         {% csrf_token %}
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalToggleLabel">Add Property</h5>
+                            <h5 class="modal-title" id="exampleModalToggleLabel">Add a property</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <p>Please fill in the form to register a property with GSC dashboard Application.</p>
-                            <div class="form-group mb-2">
-                                <input type="text" class="form-control text-regular" name="name"
-                                    placeholder="Name(i.e. Example)">
-                            </div>
+
                             <div class="form-group mb-2">
                                 <input type="text" class="form-control text-regular" name="property"
                                     placeholder="GSC Property(i.e. https://www.example.com)">
 
                             </div>
                             <p>PS: It is very imporant that the property exactly match with GSC Domain/URL
-                                Prefix</p>
+                                Prefix otherwise the scraper will fail to scrape the domain/url prefix from GSC.</p>
                             <div class="modal-footer">
                                 <input class="btn btn-small btn-emerald" type="submit" value="Register">
-                                <button class="btn btn-small btn-danger" data-bs-target="#propertyModal"
-                                    data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+
                             </div>
                         </div>
                     </form>
@@ -73,13 +69,14 @@
                     {% endif %}
 
 
+
                     <div class="table-responsive">
                         <table class="table table-list">
 
                             <thead class="list-header">
                                 <tr>
                                     <th><span>#</span></th>
-                                    <th><span>Name</span></th>
+
                                     <th><span>Domain/URL Prefix</span></th>
                                     <th><span>Scrape Priority</span></th>
                                     <th><span>Last Scrape</span></th>
@@ -95,21 +92,22 @@
                                     <td>
                                         <span class="text-emerald">{{ property.id }}</span>
                                     </td>
-                                    <td>{{ property.name }}</td>
+
                                     <td>{{ property.property }}</td>
                                     <td>{{ property.scrape_priority|title }}</td>
                                     <td>{{ property.last_scraped }}</td>
-                                    <td>{{ property.created_at|date:"d/m/y, h:ia" }}</td>
+                                    <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>
 
                                     <td>
                                         <div class="actions">
-                                            <a href="{% url 'property_urls' property.id %}"
-                                                class="btn btn-small btn-emerald">
-                                                <i class="fad fa-link" aria-hidden="true"></i> URLs
-                                            </a>
+
                                             <a href="{% url 'property_scrape' property.id %}"
                                                 class="btn btn-small btn-emerald">
-                                                <i class="fad fa-cloud-download" aria-hidden="true"></i> Fetch Now
+                                                <i class="fad fa-sync-alt"></i> Fetch Now
+                                            </a>
+                                            <a href="{% url 'property_urls' property.id %}"
+                                                class="btn btn-small btn-emerald">
+                                                <i class="fad fa-link"></i> URLs
                                             </a>
                                         </div>
                                     </td>

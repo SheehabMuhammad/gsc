@@ -15,7 +15,7 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.property
 
     class Meta:
         verbose_name_plural = "Properties"
@@ -24,10 +24,16 @@ class Property(models.Model):
 class Url(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     url = models.URLField()
-    c_type = models.CharField(blank=True, null=True, max_length=255)
-    c_status = models.CharField(blank=True, null=True, max_length=255)
+    c_type = models.CharField(
+        blank=True, default="Not listed", null=True, max_length=255
+    )
+    c_status = models.CharField(
+        blank=True, default="Not listed", null=True, max_length=255
+    )
     crawled_at = models.DateTimeField(default=None, null=True)
-    mu_type = models.CharField(blank=True, null=True, max_length=255)
+    mu_type = models.CharField(
+        default="Not listed", blank=True, null=True, max_length=255
+    )
     mu_status = models.CharField(
         default="Not listed as mobile friendly", blank=True, null=True, max_length=255
     )
@@ -48,7 +54,9 @@ class Url(models.Model):
 
 class Log(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    domain = models.URLField(blank=True, null=True)
     num_urls = models.IntegerField(default=0, null=True)
     time_taken = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
+    scrape_priority = models.CharField(max_length=100, default="low")
     created_at = models.DateTimeField(auto_now_add=True)

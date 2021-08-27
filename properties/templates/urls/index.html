@@ -6,72 +6,143 @@
 
     <div class="row">
 
-        <div class="col-md-12">
-            <div class="card mb-4" style="overflow: visible;">
-                <div class="card-body d-flex" style="padding: 5px 1rem; ">
-
-                    <div class="property-selector">
-                        <div class="selected-property">
-
-                            <div class="property-icon">
-                                <i class="fas fa-globe-americas"></i>
-                            </div>
-
-                            <div class="property-details">
-
-                                <div class="property-category">
-                                    Property
-                                </div>
-
-                                <div class="property-title">
-                                    {% if property.name %}
-                                    {{ property.name }}
-                                    {% else %}
-                                    Select a property
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <ul class="property-list">
-                            {% for property in properties %}
-                            <li class="property-item">
-                                <a href="{% url 'property_urls' property.id %}" class="property-link">
-                                    {{ property.name }}
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
         <div class="col-lg-12 col-md-12">
 
             <div class="widget mb-4">
-
                 <div class="widget-header">
+
                     <div class="labels">
                         <h3 class="title text-lato">
                             All URLs
-                            {% if property.name %}
-                            of {{ property.name }}
+                            {% if property.property %}
+                            of {{ property.property }}
                             {% endif %}</h3>
                         <span class="text-tiny text-secondary">in ascending order</span>
                     </div>
-                    <div class="actions">
-                        {% if property.name %}
-                        <a href="{% url 'property_scrape' property.id %}" class="btn btn-small btn-emerald">
-                            <i class="fad fa-cloud-download" aria-hidden="true"></i> Fetch Now
-                        </a>
-                        {% endif %}
+
+                    <div class="actions d-flex align-items-center">
+
+                        <div class="mx-2">
+                            {% if property.name %}
+                            <a href="{% url 'property_scrape' property.id %}" class="btn btn-warning text-regular">
+                                <i class="fad fa-sync-alt"></i> Fetch Now
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <a href="#" class="btn btn-emerald text-regular">
+                                <i class="fad fa-cloud-download-alt"></i> Export
+                            </a>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="widget-content">
+
+                    <form class="filters" method="GET"
+                        style="padding: 18px;background: rgba(100, 100, 100, 0.1);border-radius: 7px;">
+
+                        <div class="row">
+                            <h4 style="font-size: 16px;">Filters</h4>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p style="font-size: 14px;">Select Coverage Type</p>
+                                        <div class="form-check">
+                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
+                                                value="" id="filter-1">
+                                            <label class="form-check-label" for="filter-1">
+                                                Excluded by ‘noindex’ tag
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
+                                                value="" id="filter-2">
+                                            <label class="form-check-label" for="filter-2">
+                                                Crawled - currently not indexed
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
+                                                value="" id="filter-3">
+                                            <label class="form-check-label" for="filter-3">
+                                                Page with redirect
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input name="coverage_type[]" class="form-check-input" type="checkbox"
+                                                value="" id="filter-4">
+                                            <label class="form-check-label" for="filter-4">
+                                                Submitted and indexed
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <p style="font-size: 14px;">Select Coverage Status</p>
+                                        {% for filter in c_statuses %}
+                                        <div class="form-check">
+                                            <input {% if filter in coverage_status %} checked {% endif %}
+                                                name="coverage_status[]" class="form-check-input" type="checkbox"
+                                                value="{{ filter }}" id="c_{{ filter }}" />
+                                            <label class="form-check-label" for="c_{{ filter }}">
+                                                {{ filter }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p style="font-size: 14px;">Select Mobile Usability Type</p>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="filter-9">
+                                            <label class="form-check-label" for="filter-9">
+                                                Mobile-friendly pages
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="filter-10">
+                                            <label class="form-check-label" for="filter-10">
+                                                Not listed as mobile friendly
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <p style="font-size: 14px;">Select Mobile Usability Status</p>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="filter-11">
+                                            <label class="form-check-label" for="filter-11">
+                                                Error
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="filter-12">
+                                            <label class="form-check-label" for="filter-12">
+                                                Valid
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <input name="search" class="form-control" id="search" type="text"
+                                    placeholder="Search URL" value="{% if search %}{{ search }}{% endif %}">
+                                <input class="btn btn-primary w-100 my-2" type="submit" value="Filter">
+                            </div>
+
+                        </div>
+                    </form>
+
+
                     <div class="table-responsive">
                         <table class="table table-list">
                             <thead>
@@ -97,19 +168,18 @@
 
                                     <td>{{ url.c_type }}</td>
                                     <td>{{ url.c_status }}</td>
-                                    <td>{{ url.crawled_at|date:"d/m/y, h:ia" }}</td>
+                                    <td>{{ url.crawled_at|date:"m/d/y, h:ia" }}</td>
 
                                     <td>{{ url.mu_type }}</td>
                                     <td>{{ url.mu_status }}</td>
-                                    <td>{{ url.detected_at|date:"d/m/y, h:ia" }}</td>
+                                    <td>{{ url.detected_at|date:"m/d/y, h:ia" }}</td>
 
-                                    <td>{{ url.created_at|date:"d/m/y, h:ia" }}</td>
+                                    <td>{{ url.created_at|date:"m/d/y, h:ia" }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-
                 </div>
 
                 <div class="widget-footer">

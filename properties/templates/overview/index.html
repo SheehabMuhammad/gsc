@@ -10,46 +10,6 @@
         <div class="col-md-6">
 
             <div class="widget mb-4">
-                <div class="widget-header mb-3">
-                    <div class="labels">
-                        <h3 class="title text-lato">Recent Activities</h3>
-                        <span class="text-tiny text-secondary">Scraper logs</span>
-                    </div>
-                    <div class="actions">
-                        <a href="{% url 'logs' %}" class="btn btn-small btn-dark">
-                            <i class="fad fa-clipboard-list"></i> See all
-                        </a>
-                    </div>
-                </div>
-                <div class="widget-content">
-                    {% for log in logs %}
-                    <div class="d-flex align-items-center text-regular mb-2">
-                        <div class="list-icon p-2 bg-light-gray">
-                            <i class="fad fa-clipboard-list"></i>
-                        </div>
-                        <div class="p-2" style="flex-grow: 1;">
-                            <a class="text-emerald" href="{% url 'property_urls' log.property_id %}">
-                                Property ID: {{ log.property_id }}</a>
-
-                        </div>
-                        <div class="p-2" style="flex-grow: 1;">
-                            Scraped URLs: {{ log.num_urls }}
-                        </div>
-                        <div class="p-2">
-                            <td>{{ log.created_at|date:"d/m/y, h:ia" }}</td>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-
-
-        </div> <!-- main contents end-->
-
-        <!-- Right Sidebar Contents-->
-        <div class="col-md-6">
-            <div class="widget mb-4">
 
                 <div class="widget-header">
                     <div class="labels">
@@ -69,6 +29,14 @@
                 </div>
 
                 <script>
+                    dates = [
+                        {% for url in urls_by_date %} '{{ url.day|date:"b d"|title }}', {% endfor %}
+                    ];
+
+                    count = [
+                        {% for url in urls_by_date %} '{{ url.created_count }}', {% endfor %}
+                    ];
+
                     // Chart in Dashboard version 1
                     var analytics = document.getElementById('analytics');
 
@@ -86,7 +54,7 @@
                             xAxis: [{
                                 type: 'category',
                                 boundaryGap: false,
-                                data: ['August 04', 'August 05', 'August 06', 'August 07', 'August 08', 'August 09', 'August 10', 'August 11', 'August 12', 'August 13'],
+                                data: dates,
                                 axisLabel: {
                                     color: '#999999',
                                     fontSize: 10,
@@ -130,7 +98,7 @@
                                     itemStyle: {
                                         color: '#26C994'
                                     },
-                                    data: [5, 50, 30, 160, 450, 230, 300, 100, 80, 200]
+                                    data: count
                                 }
                             ]
                         };
@@ -142,6 +110,64 @@
                 </script>
 
             </div>
+
+
+
+        </div> <!-- main contents end-->
+
+        <!-- Right Sidebar Contents-->
+        <div class="col-md-6">
+            <div class="widget mb-4">
+                <div class="widget-header mb-3">
+                    <div class="labels">
+                        <h3 class="title text-lato">Recent Activities</h3>
+                        <span class="text-tiny text-secondary">Scraper logs</span>
+                    </div>
+                    <div class="actions">
+                        <a href="{% url 'logs' %}" class="btn btn-small btn-dark">
+                            <i class="fad fa-clipboard-list"></i> See all
+                        </a>
+                    </div>
+                </div>
+                <div class="widget-content">
+                    <div class="table-responsive">
+                        <table class="table table-list">
+
+                            <tbody class="list-body text-small text-normal">
+
+                                {% for log in logs %}
+                                <tr>
+                                    <td>
+                                        <div class="list-icon p-2 bg-light-gray">
+                                            <i class="fad fa-clipboard-list"></i>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-emerald"
+                                        style="max-width: 180px;overflow: hidden;text-overflow: ellipsis;">
+                                        {{ log.property }}</td>
+                                    <td>Scraped URLs: {{ log.num_urls }}</td>
+                                    <td>Priority: {{ log.scrape_priority }}</td>
+                                    <td>
+                                        {{ log.created_at|date:"m/d/y, h:ia" }}
+                                    </td>
+
+
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+
         </div>
 
     </div>
