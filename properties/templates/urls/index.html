@@ -9,33 +9,35 @@
         <div class="col-lg-12 col-md-12">
 
             <div class="widget mb-4">
-                <div class="widget-header">
 
+                <div class="widget-header">
                     <div class="labels">
                         <h3 class="title text-lato">
                             All URLs
                             {% if property.property %}
                             of {{ property.property }}
-                            {% endif %}</h3>
+                            {% endif %}
+                            {% if property.property %}
+                            <a href="{% url 'property_scrape' property.id %}" class="btn btn-small btn-warning">
+                                <i class="fad fa-sync-alt"></i> Fetch Now
+                            </a>
+                            {% endif %}
+                        </h3>
                         <span class="text-tiny text-secondary">in ascending order</span>
                     </div>
 
                     <div class="actions d-flex align-items-center">
-
                         <div class="mx-2">
-                            {% if property.name %}
-                            <a href="{% url 'property_scrape' property.id %}" class="btn btn-warning text-regular">
-                                <i class="fad fa-sync-alt"></i> Fetch Now
-                            </a>
-                            {% endif %}
+                            <button class="btn btn-small btn-emerald" data-bs-target="#propertyModal"
+                                data-bs-toggle="modal" data-bs-dismiss="modal">
+                                <i class="fad fa-plus-circle"></i> Add property
+                            </button>
                         </div>
-
                         <div>
-                            <a href="#" class="btn btn-emerald text-regular">
+                            <a href="#" class="btn btn-small btn-emerald">
                                 <i class="fad fa-cloud-download-alt"></i> Export
                             </a>
                         </div>
-
                     </div>
                 </div>
 
@@ -43,87 +45,61 @@
 
                     <form class="filters" method="GET"
                         style="padding: 18px;background: rgba(100, 100, 100, 0.1);border-radius: 7px;">
-
                         <div class="row">
                             <h4 style="font-size: 16px;">Filters</h4>
-                            <div class="col-md-4">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="filter-label">Select Coverage Type</p>
-                                        {% for filter in filters %}
-                                        {% if filter.name == 'c_type' %}
-                                        <div class="form-check">
-                                            <input {% if filter.value in c_type %} checked {% endif %} name="c_type[]"
-                                                class="form-check-input" type="checkbox" value="{{ filter }}"
-                                                id="c_type{{ filter }}" />
-                                            <label class="form-check-label" for="c_type{{ filter }}">
-                                                {{ filter }}
-                                            </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <p class="filter-label">Select Coverage Status</p>
-                                        {% for filter in filters %}
-                                        {% if filter.name == 'c_status' %}
-                                        <div class="form-check">
-                                            <input {% if filter.value in c_status %} checked {% endif %}
-                                                name="c_status[]" class="form-check-input" type="checkbox"
-                                                value="{{ filter }}" id="c_status{{ filter }}" />
-                                            <label class="form-check-label" for="c_status{{ filter }}">
-                                                {{ filter }}
-                                            </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </div>
+                            <div class="col-md-2">
+                                <p class="filter-label">Select Coverage Status</p>
+                                {% for filter in filters %}
+                                {% if filter.name == 'c_status' %}
+                                <div class="form-check">
+                                    <input {% if filter.value in c_status %} checked {% endif %} name="c_status[]"
+                                        class="form-check-input" type="checkbox" value="{{ filter }}"
+                                        id="c_status{{ filter }}" />
+                                    <label class="form-check-label" for="c_status{{ filter }}">
+                                        {{ filter }}
+                                    </label>
                                 </div>
+                                {% endif %}
+                                {% endfor %}
                             </div>
 
                             <div class="col-md-4">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="filter-label">Select Mobile Usability Type</p>
-                                        {% for filter in filters %}
-                                        {% if filter.name == 'mu_type' %}
-                                        <div class="form-check">
-                                            <input {% if filter.value in mu_type %} checked {% endif %} name="mu_type[]"
-                                                class="form-check-input" type="checkbox" value="{{ filter }}"
-                                                id="mu_type{{ filter }}" />
-                                            <label class="form-check-label" for="mu_type{{ filter }}">
-                                                {{ filter }}
-                                            </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <p class="filter-label">Select Mobile Usability Status</p>
-                                        {% for filter in filters %}
-                                        {% if filter.name == 'mu_status' %}
-                                        <div class="form-check">
-                                            <input {% if filter.value in mu_status %} checked {% endif %}
-                                                name="mu_status[]" class="form-check-input" type="checkbox"
-                                                value="{{ filter }}" id="mu_status{{ filter }}" />
-                                            <label class="form-check-label" for="mu_status{{ filter }}">
-                                                {{ filter }}
-                                            </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </div>
+                                <p class="filter-label">Select Coverage Type</p>
+                                {% for filter in filters %}
+                                {% if filter.name == 'c_type' %}
+                                <div class="form-check">
+                                    <input {% if filter.value in c_type %} checked {% endif %} name="c_type[]"
+                                        class="form-check-input" type="checkbox" value="{{ filter }}"
+                                        id="c_type{{ filter }}" />
+                                    <label class="form-check-label" for="c_type{{ filter }}">
+                                        {{ filter }}
+                                    </label>
                                 </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-2">
+                                <p class="filter-label">Select Mobile Usability Status</p>
+                                {% for filter in filters %}
+                                {% if filter.name == 'mu_status' %}
+                                <div class="form-check">
+                                    <input {% if filter.value in mu_status %} checked {% endif %} name="mu_status[]"
+                                        class="form-check-input" type="checkbox" value="{{ filter }}"
+                                        id="mu_status{{ filter }}" />
+                                    <label class="form-check-label" for="mu_status{{ filter }}">
+                                        {{ filter }}
+                                    </label>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
                             </div>
 
                             <div class="col-md-4">
                                 <input name="search" class="form-control" id="search" type="text"
                                     placeholder="Search URL" value="{% if search %}{{ search }}{% endif %}">
-                                <input class="btn btn-primary w-100 my-2" type="submit" value="Filter">
+                                <input class="btn btn-emerald w-100 my-2" type="submit" value="Filter">
                             </div>
-
                         </div>
                     </form>
 

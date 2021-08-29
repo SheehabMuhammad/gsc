@@ -44,14 +44,13 @@ def user_logout(request):
 def index(request):
 
     properties = Property.objects.all()
+    logs = Log.objects.all().order_by("-id")[:20]
 
     urls_by_date = (
         Url.objects.extra({"day": "date(created_at)"})
         .values("day")
         .annotate(created_count=Count("id"))
     )
-
-    logs = Log.objects.all().order_by("-id")[:20]
 
     context = {
         "properties": properties,
@@ -78,7 +77,10 @@ def properties(request):
                 resource_id = property
             try:
                 property = Property(
-                    property=property, resource_id=resource_id, owner_id=request.user.id
+                    property=property,
+                    resource_id=resource_id,
+                    owner_id=request.user.id,
+                    scrape_priority="high",
                 )
                 property.save()
                 messages.success(request, "Property registred.")
@@ -108,7 +110,7 @@ def property_scrape(request, property_id):
     property.save()
     messages.info(
         request,
-        "Property tranferred to high priority scraper, scraping will be completed in next minutes.",
+        "Property tranferred to high priority scraper, scraping will be completed in the next few minutes. Priority will reset after URLs are scraped from GSC.",
     )
     return redirect(reverse("properties"))
 
@@ -118,6 +120,10 @@ def property_urls(request, property_id):
     timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.get(id=property_id)
+
+    request.session["property_id"] = property.id
+    request.session["property"] = property.property
+
     properties = Property.objects.all()
     urls = property.url_set.all().order_by("id")
     filters = Filter.objects.all()
@@ -164,63 +170,6 @@ def property_urls(request, property_id):
         "mu_status": mu_status,
         "mu_type": mu_type,
         "search": search,
-        "show_selector": True,
-    }
-
-    return render(request, "urls/index.html", context)
-
-
-@login_required(login_url="/login/")
-def urls(request):
-    timezone.activate(pytz.timezone("America/Chicago"))
-
-    properties = Property.objects.all()
-    urls = Url.objects.all().order_by("id")
-
-    filters = Filter.objects.all()
-
-    c_type = request.GET.getlist("c_type[]")
-    c_status = request.GET.getlist("c_status[]")
-    mu_type = request.GET.getlist("mu_type[]")
-    mu_status = request.GET.getlist("mu_status[]")
-    search = request.GET.get("search")
-
-    if c_type:
-        urls = urls.filter(c_type__in=c_type)
-    if c_status:
-        urls = urls.filter(c_status__in=c_status)
-    if mu_type:
-        urls = urls.filter(mu_type__in=mu_type)
-    if mu_status:
-        urls = urls.filter(mu_status__in=mu_status)
-    if search:
-        urls = urls.filter(url__icontains=search)
-
-    # Show 1000 urls per page
-    paginator = Paginator(urls, 1000)
-
-    page = request.GET.get("page")
-
-    try:
-        urls = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        urls = paginator.page(1)
-
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        urls = paginator.page(paginator.num_pages)
-
-    context = {
-        "properties": properties,
-        "urls": urls,
-        "filters": filters,
-        "c_status": c_status,
-        "c_type": c_type,
-        "mu_status": mu_status,
-        "mu_type": mu_type,
-        "search": search,
-        "show_selector": True,
     }
 
     return render(request, "urls/index.html", context)
@@ -231,13 +180,6 @@ def logs(request):
     timezone.activate(pytz.timezone("America/Chicago"))
     logs = Log.objects.all().order_by("-id")
     return render(request, "logs/index.html", {"logs": logs})
-
-
-@login_required(login_url="/login/")
-def url(request, url_id):
-    timezone.activate(pytz.timezone("America/Chicago"))
-    url = Url.objects.all()
-    return render(request, "url/index.html", {"url": url})
 
 
 def sync_filters(request):

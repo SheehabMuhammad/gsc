@@ -20,8 +20,8 @@
                     </div>
 
                     <div class="property-title">
-                        {% if property.property %}
-                        {{ property.property }}
+                        {% if request.session.property %}
+                        {{ request.session.property }}
                         {% else %}
                         Select a property
                         {% endif %}
@@ -37,9 +37,14 @@
                     </a>
                 </li>
                 {% endfor %}
+                <li class="property-item">
+                    <button class="btn btn-small property-link w-100" data-bs-target="#propertyModal"
+                        data-bs-toggle="modal" data-bs-dismiss="modal" style="text-align: left;">
+                        <i class="fad fa-plus-circle"></i> Add property
+                    </button>
+                </li>
             </ul>
         </div>
-
     </div>
 
 
@@ -62,13 +67,6 @@
                     <span class="nav-text">Properties</span>
                 </a>
             </li>
-
-            <!-- <li class="nav-item">
-                <a class="nav-link {% if url_name == 'urls' %}is-active{% endif %}" href="{% url 'urls' %}">
-                    <i class="fad fa-link"></i>
-                    <span class="nav-text">URLs</span>
-                </a>
-            </li> -->
 
             <li class="nav-item has-divider">
                 <a class="nav-link {% if url_name == 'logs' %}is-active{% endif %}" href="{% url 'logs' %}">
