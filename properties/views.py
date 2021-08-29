@@ -44,7 +44,7 @@ def user_logout(request):
 def index(request):
 
     properties = Property.objects.all()
-    logs = Log.objects.all().order_by("-id")[:20]
+    logs = Log.objects.all().order_by("-id")[:10]
 
     urls_by_date = (
         Url.objects.extra({"day": "date(created_at)"})
