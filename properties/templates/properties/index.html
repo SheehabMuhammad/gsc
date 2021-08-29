@@ -110,7 +110,11 @@
                                         <span class="text-emerald">{{ property.id }}</span>
                                     </td>
 
-                                    <td>{{ property.property }}</td>
+                                    <td>
+                                        <a href="{% url 'property_urls' property.id %}" class="inherit-color">
+                                            {{ property.property }}
+                                        </a>
+                                    </td>
                                     <td>{{ property.scrape_priority|title }}</td>
                                     <td>{{ property.last_scraped }}</td>
                                     <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>

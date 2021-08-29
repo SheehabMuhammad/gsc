@@ -7,9 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q, Count
-from django.db.models.functions import TruncDay
 from django.utils import timezone
-from datetime import datetime, timedelta
 import pytz
 
 from .models import Property, Url, Log, Filter
@@ -47,33 +45,19 @@ def index(request):
 
     properties = Property.objects.all()
 
-    some_day_last_week = datetime.now() - timedelta(days=20)
-
-    print("day: ", some_day_last_week)
-
     urls_by_date = (
-        Url.objects.filter(
-            created_at__gte=some_day_last_week,
-        )
-        .annotate(
-            day=TruncDay("created_at"),
-            created_count=Count("created_at__date"),
-        )
-        .values(
-            "day",
-            "created_count",
-        )
+        Url.objects.extra({"day": "date(created_at)"})
+        .values("day")
+        .annotate(created_count=Count("id"))
     )
 
-    logs = Log.objects.all()
+    logs = Log.objects.all().order_by("-id")[:20]
 
     context = {
         "properties": properties,
         "urls_by_date": urls_by_date,
         "logs": logs,
     }
-
-    print(urls_by_date)
 
     return render(request, "overview/index.html", context)
 
@@ -135,7 +119,7 @@ def property_urls(request, property_id):
 
     property = Property.objects.get(id=property_id)
     properties = Property.objects.all()
-    urls = property.url_set.all()
+    urls = property.url_set.all().order_by("id")
     filters = Filter.objects.all()
 
     c_type = request.GET.getlist("c_type[]")
@@ -191,7 +175,7 @@ def urls(request):
     timezone.activate(pytz.timezone("America/Chicago"))
 
     properties = Property.objects.all()
-    urls = Url.objects.all()
+    urls = Url.objects.all().order_by("id")
 
     filters = Filter.objects.all()
 
@@ -245,7 +229,7 @@ def urls(request):
 @login_required(login_url="/login/")
 def logs(request):
     timezone.activate(pytz.timezone("America/Chicago"))
-    logs = Log.objects.all()
+    logs = Log.objects.all().order_by("-id")
     return render(request, "logs/index.html", {"logs": logs})
 
 

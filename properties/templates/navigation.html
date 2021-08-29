@@ -6,7 +6,7 @@
                 <span> GSC Dashboard </span>
             </h1>
         </a>
-        {% if show_selector %}
+
         <div class="property-selector">
             <div class="selected-property">
                 <div class="property-icon">
@@ -39,7 +39,6 @@
                 {% endfor %}
             </ul>
         </div>
-        {% endif %}
 
     </div>
 
@@ -64,12 +63,12 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link {% if url_name == 'urls' %}is-active{% endif %}" href="{% url 'urls' %}">
                     <i class="fad fa-link"></i>
                     <span class="nav-text">URLs</span>
                 </a>
-            </li>
+            </li> -->
 
             <li class="nav-item has-divider">
                 <a class="nav-link {% if url_name == 'logs' %}is-active{% endif %}" href="{% url 'logs' %}">

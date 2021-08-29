@@ -127,12 +127,14 @@
                         </div>
                     </form>
 
+                    <div style="margin: 15px 0;">
+                        <span>Showing {{ urls|length }} items</span>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-list">
                             <thead>
                                 <tr class="text-small list-header">
-                                    <th scope="col">#</th>
                                     <th scope="col">URL</th>
                                     <th scope="col">Coverage Type</th>
                                     <th scope="col">Coverage Status</th>
@@ -148,7 +150,6 @@
                             <tbody class="list-body text-small">
                                 {% for url in urls %}
                                 <tr>
-                                    <th scope="row" class="text-emerald">{{ url.id }}</th>
                                     <td>{{ url.url }}</td>
 
                                     <td>{{ url.c_type }}</td>
@@ -172,7 +173,8 @@
                     <div class="text-small d-flex justify-content-between align-items-center">
 
                         <div style="margin-left: 15px;">
-                            <span>Showing Page {{ urls.number }} of {{ urls.paginator.num_pages }}</span>
+                            <span>Showing {{ urls|length }} items - Page {{ urls.number }} of
+                                {{ urls.paginator.num_pages }}</span>
                         </div>
 
                         <ul class="pagination justify-content-end mb-0">
