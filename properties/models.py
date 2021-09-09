@@ -55,6 +55,7 @@ class Url(models.Model):
 class Filter(models.Model):
     name = models.CharField(max_length=255)
     value = models.CharField(max_length=255)
+    type = models.CharField(default="Unknown", max_length=255)
 
     def __str__(self):
         return self.value
@@ -62,7 +63,7 @@ class Filter(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "value"], name="unique filter constraint"
+                fields=["name", "value", "type"], name="unique filter constraint"
             )
         ]
 

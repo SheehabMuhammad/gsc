@@ -105,6 +105,20 @@ a.text-emerald:hover {
 }
 
 
+.Valid {
+    color: green;
+}
+
+.Excluded, .Not.listed.as.mobile.friendly {
+    color: #888;
+}
+
+.Error {
+    color: red;
+}
+
+
+
 /* Background Colors */
 
 .bg-emerald {
@@ -218,7 +232,7 @@ a.text-emerald:hover {
 .vertical-navigation li a {
     font-family: 'Roboto', sans-serif;
     font-size: 0.825rem;
-    color: #9298A3 !important;
+    color: #9298A3;
     cursor: pointer;
     padding: 0.625rem 0.9375rem;
     margin: 3px 0px;
@@ -226,7 +240,7 @@ a.text-emerald:hover {
 }
 .vertical-navigation li a:hover {
     background-color: rgba(55, 166, 89, 0.05);
-    color: rgb(40, 200, 150)  !important;
+    color: rgb(40, 200, 150);
     box-shadow: 0px 0px 1px 0px #E7E9EB;
 }
 .vertical-navigation li a.is-active {

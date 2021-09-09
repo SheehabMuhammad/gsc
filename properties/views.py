@@ -126,7 +126,7 @@ def property_urls(request, property_id):
 
     properties = Property.objects.all()
     urls = property.url_set.all().order_by("id")
-    filters = Filter.objects.all()
+    filters = Filter.objects.all().order_by("-type")
 
     c_type = request.GET.getlist("c_type[]")
     c_status = request.GET.getlist("c_status[]")
@@ -183,34 +183,31 @@ def logs(request):
 
 
 def sync_filters(request):
-    c_status = Url.objects.order_by().values_list("c_status", flat=True).distinct()
-    for status in c_status:
+
+    coverages = Url.objects.order_by().values_list("c_status", "c_type").distinct()
+    for coverage in coverages:
+        # Create new coverage status filter
         try:
-            filter = Filter.objects.get(name="c_status", value=status)
+            filter = Filter.objects.get(
+                name="c_status", value=coverage[0], type=coverage[0]
+            )
         except ObjectDoesNotExist:
-            filter = Filter(name="c_status", value=status)
+            filter = Filter(name="c_status", value=coverage[0], type=coverage[0])
             filter.save()
 
-    c_type = Url.objects.order_by().values_list("c_type", flat=True).distinct()
-    for status in c_type:
         try:
-            filter = Filter.objects.get(name="c_type", value=status)
+            filter = Filter.objects.get(
+                name="c_type", value=coverage[1], type=coverage[0]
+            )
         except ObjectDoesNotExist:
-            filter = Filter(name="c_type", value=status)
+            filter = Filter(name="c_type", value=coverage[1], type=coverage[0])
             filter.save()
 
-    mu_status = Url.objects.order_by().values_list("mu_status", flat=True).distinct()
-    for status in mu_status:
+    mus = Url.objects.order_by().values_list("mu_status", "mu_type").distinct()
+    for mu in mus:
+        # Create new coverage status filter
         try:
-            filter = Filter.objects.get(name="mu_status", value=status)
+            filter = Filter.objects.get(name="mu_status", value=mu[0], type=mu[0])
         except ObjectDoesNotExist:
-            filter = Filter(name="mu_status", value=status)
-            filter.save()
-
-    mu_type = Url.objects.order_by().values_list("mu_type", flat=True).distinct()
-    for status in mu_type:
-        try:
-            filter = Filter.objects.get(name="mu_type", value=status)
-        except ObjectDoesNotExist:
-            filter = Filter(name="mu_type", value=status)
+            filter = Filter(name="mu_status", value=mu[0], type=mu[0])
             filter.save()
