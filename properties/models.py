@@ -60,6 +60,43 @@ class Filter(models.Model):
         ]
 
 
+class Backlink(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    backlink = models.CharField(max_length=512)
+    authority = models.IntegerField(default=0, blank=True, null=True)
+    crawled_at = models.DateTimeField(default=None, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.backlink
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["property", "backlink"], name="unique property backlink constraint"
+            )
+        ]
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+    expressions = models.JSONField()
+    scope = models.CharField(default="Universal", max_length=255)
+
+    def __str__(self):
+        return self.name + " - " + self.scope
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "scope"], name="unique tag constraint"
+            )
+        ]
+
+
+
+
 class Log(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     type = models.CharField(max_length=255, blank=True, null=True)

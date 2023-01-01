@@ -309,12 +309,12 @@ ul.messages {
     list-style: none;
     padding: 0;
     font-size: 15px;
+    max-width: 450px;
+    margin-left: auto;
 }
-
 ul.messages li.error {
     color: red;
 }
-
 
 /* Property Switch CSS */
 
@@ -623,3 +623,103 @@ td a.url {
     }
 }
  */
+
+
+
+ul.ks-cboxtags {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    flex-wrap: wrap;
+}
+ul.ks-cboxtags li {
+    display: block;
+    margin-right: 5px;
+}
+
+ul.ks-cboxtags li label {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(139, 139, 139, 0.1);
+    color: #121212;
+    border-radius: 5px;
+    white-space: nowrap;
+    margin: 3px 0px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s;
+}
+
+ul.ks-cboxtags li label {
+    padding: 2px 10px;
+    cursor: pointer;
+}
+
+ul.ks-cboxtags li input[type="checkbox"]:checked + label {
+    border: 1px solid #11B47F;
+    background-color: #11B47F;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+ul.ks-cboxtags li input[type="checkbox"] {
+    display: absolute;
+}
+ul.ks-cboxtags li input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
+ul.ks-cboxtags li input[type="checkbox"]:focus + label {
+    border: 1px solid #11B47F;
+}
+
+
+
+.Untagged {
+    background-color: #5A6474 !important;
+}
+
+/* .Directory {
+    background-color: #a9ab00 !important;
+} */
+
+.Spam {
+    background-color: #ff0000 !important;
+}
+
+.gap-right {
+    margin-right: 5px;
+}
+
+
+/* Modal */
+
+.custom-modal-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1056;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+    transition: opacity .15s linear;
+    background: rgba(2, 2 ,2, 0.5);
+    display: grid;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal-container label {
+    font-size: 18px;
+}
+
+.btn.btn-outline-secondary {
+    border: 1px solid #ced4da;
+}

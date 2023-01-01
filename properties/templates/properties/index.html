@@ -2,8 +2,6 @@
 
 {% block content-area %}
 
-<div class="container">
-
 
     <div class="row">
 
@@ -25,20 +23,6 @@
                 </div>
 
                 <div class="widget-content">
-
-                    {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                        <div class="alert alert-warning d-flex align-items-center" role="alert">
-                            <i class="fad fa-check-circle"></i>
-                            <div>
-                                &nbsp;{{ message }}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-
 
 
                     <div class="table-responsive">
@@ -82,7 +66,7 @@
                                             
                                             <a href="{% url 'property_links' property.id %}"
                                                 class="btn btn-small btn-emerald">
-                                                <i class="fad fa-arrow-up-right-from-square"></i> Links
+                                                <i class="fad fa-external-link-square-alt"></i> Backlinks
                                             </a>
                                             
                                             <a href="{% url 'property_scrape' property.id %}"
@@ -104,8 +88,6 @@
         </div>
     </div>
 
-
-</div>
 
 
 

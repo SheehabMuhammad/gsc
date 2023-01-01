@@ -1,0 +1,520 @@
+{% extends 'base-admin.html' %}
+
+{% block content-area %}
+
+{{ property_json|json_script:"property_json" }}
+{{ backlinks_json|json_script:"backlinks_json" }}
+{{ tags_json|json_script:"tags_json" }}
+
+
+
+{% verbatim %}
+<div class="row">
+
+    <div class="col-lg-12 col-md-12">
+
+        <div id="urlswidget" class="widget mb-4">
+
+            <div class="widget-header">
+                <div class="labels">
+                    <h3 class="title text-lato">
+                        Latest backlinks
+                        <span v-if="property">of {{ property.property }}</span>
+                    </h3>
+                    <span class="text-tiny text-secondary">Collected everyday from GSC | Showing in ascending order</span>
+                </div>
+
+                <div class="actions d-flex align-items-center">
+                    <div class="mx-2">
+                        <button class="btn btn-small btn-emerald" data-bs-target="#propertyModal"
+                            data-bs-toggle="modal" data-bs-dismiss="modal">
+                            <i class="fad fa-plus-circle"></i> Add property
+                        </button>
+                    </div>
+                    <div>
+                        <a @click="exportCSV" class="btn btn-small btn-emerald"><i class="fad fa-cloud-download-alt"></i> Export</a>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="widget-content">
+
+                <form class="filters" style="padding: 18px;background: rgba(100, 100, 100, 0.1);border-radius: 7px;">
+                    <div class="row">
+                        <h4 style="font-size: 16px;">Filters</h4>
+
+                        <div class="col-md-12 mb-4">
+                            <input v-model="searchKeywords" class="form-control text-small" type="text"
+                                placeholder="Search by keywords (use '-' to exclude keyword)">
+                        </div>
+
+                        <div class="col-md-12">
+                        
+                            <div class="d-flex justify-content-between mb-1">
+                                <p class="filter-label mb-0">Select Tags</p>
+                                <div>
+                                    <button type="button" class="btn btn-small btn-emerald" @click="newTag.show = ! newTag.show">
+                                        <i class="fad fa-plus-circle"></i> Add tag
+                                    </button>
+                                    {% endverbatim %}
+                                    <a href="{% url 'tags' %}" class="btn btn-small btn-emerald" style="margin-left: 5px;">
+                                        <i class="fad fa-tag"></i> Manage tags
+                                    </a>
+                                    {% verbatim %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <ul class="ks-cboxtags">
+                                    <li><input v-model="selectedTags" type="checkbox" id="untagged" value="Untagged"><label for="untagged">Untagged</label></li>
+                                    <li v-for="tag in tags"><input v-model="selectedTags" type="checkbox" :id="'tag-'+tag.id" :value="tag.name"><label :for="'tag-'+tag.id">{{ tag.name }}</label></li>
+                                </ul>
+                                <span class="text-small text-muted">
+                                    Selected {{ filteredBacklinks.length }} of {{ backlinks.length }} backlinks
+                                </span>
+                            </div>
+                        
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="d-flex my-3 gap-2">
+                    <button :disabled="selectedBacklinks.length == 0" type="button" class="btn btn-small btn-emerald" @click="openAddToTagModal(selectedBacklinks)">
+                        <i class="fad fa-plus-circle"></i> Add selected {{ selectedBacklinks.length }} backlinks to a tag
+                    </button>
+                    <button class="btn btn-small btn-danger" @click="selectedBacklinks = []" v-if="selectedBacklinks.length != 0">Clear selection</button>
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-list">
+                        <thead>
+                            <tr class="text-small list-header">
+                                <th></th>
+                                <th @click="updateSort('backlink')" scope="col" style="cursor: pointer;">
+                                    <span class="badge bg-secondary">Backlinks <i class="fad fa-sort-circle text-emerald"></i></span>
+                                </th>
+
+                                <th scope="col" style="cursor: pointer; max-width: 300px;">
+                                    <span class="badge bg-secondary">Tags</span>
+                                </th>
+
+                                <th @click="updateSort('authority')" scope="col" style="cursor: pointer;">
+                                    <span class="badge bg-secondary">Domain Authority <i class="fad fa-sort-circle text-emerald"></i></span>
+                                </th>
+                                
+                                <th @click="updateSort('crawled_at')" scope="col" style="cursor: pointer;">
+                                    <span class="badge bg-secondary">GSC Crawled At<i class="fad fa-sort-circle text-emerald"></i></span>
+                                </th>
+
+                                <th @click="updateSort('created_at')" scope="col" style="cursor: pointer;">
+                                    <span class="badge bg-secondary">First Collected At <i class="fad fa-sort-circle text-emerald"></i></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="list-body text-small">
+                            <tr v-for="backlink in pageBacklinks">
+                                <td>
+                                    <input v-model="selectedBacklinks" type="checkbox" name="selected" :id="'backlink-'+backlink.id" :value="backlink.backlink">
+                                </td>
+
+                                <td>
+                                    <a :href="backlink.backlink" target="_blank" rel="noopener noreferrer"
+                                        class="inherit-color url">
+                                        {{ backlink.backlink }} <i class="fad fa-share text-emerald"></i>
+                                    </a>
+                                </td>
+
+                                <td style="width: 300px;">
+                                    <span v-for="tag in backlink.tags" class="badge bg-emerald" :class="tag" style="margin-left: 3px;">{{tag}}</span>
+                                    <span class="badge bg-primary" style="margin-left: 3px;" @click="openAddToTagModal([backlink.backlink])">+Add to a tag</span>
+                                </td>
+                            
+                                <td>{{ backlink.authority }}</td>
+                                <td>{{ formatDate(backlink.crawled_at) }}</td>
+                                <td>{{ formatDate(backlink.created_at) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="widget-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-small text-muted">
+                            Showing {{ pageBacklinks.length }} of {{ filteredBacklinks.length }} items
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end">
+                                <li class="page-item" :class="{'disabled': currentPage == 1}">
+                                    <a class="page-link" href="#" aria-label="Previous"
+                                        @click.prevent="changePage(currentPage - 1)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" v-for="page in pages"
+                                    :class="{'active': page == currentPage}">
+                                    <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+                                </li>
+                                <li class="page-item" :class="{'disabled': currentPage == pages}">
+                                    <a class="page-link" href="#" aria-label="Next"
+                                        @click.prevent="changePage(currentPage + 1)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- New Tag Modal -->
+            <div class="custom-modal-container" v-show="newTag.show">
+                <div class="custom-modal-content">
+                    <div class="card">
+                        <h5 class="card-header">Add a new tag</h5>
+                        <div class="card-body">
+                            <div class="form-group mb-3">
+                                <label>Tag Name: {{newTag.name}}</label>
+                                <input v-model="newTag.name" type="text" class="form-control text-regular"  placeholder="Name of the tag">
+                            </div>
+            
+                            <div class="form-group mt-2 mb-2">
+                                <div class="d-flex justify-content-between my-2">
+                                    <label class="form-text-label" for="expression">Expressions:</label>
+                                    <a class="btn btn-small btn-emerald" href="#" @click="addExpressionField()">Add another field</a>
+                                </div>
+                                <div v-for="expression in newTag.expressions">
+                                    <input name="expression" class="form-control text-regular mb-2" type="text" placeholder="Example: yelp.com or yellowpage or any keyword" v-model="expression.expression"/>
+                                </div>
+                                <p class="text-small">Like a keyword, you can keep the URL or part of the URL as a match criteria of the tag.<br> You can add multiple expression by clicking on add another field.</p>
+                            </div>
+                            
+                            <div class="form-group mb-2">
+                                <label>Scope of tag:</label>
+                                <select v-model="newTag.scope" class="form-select text-small">
+                                    <option disabled value="">Please select one</option>
+                                    <option value="universal">Universal</option>
+                                    <option :value="property.property">{{ property.property }}</option>
+                                </select>
+                            </div>
+                            <p class="text-small">Property, where this tag should be used.</p>                                
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-end">
+                            <button class="btn btn-emerald text-regular" @click="saveTag()">Save tag</button>
+                            <button type="button" class="btn btn-danger text-regular" style="margin-left: 5px;" @click="newTag.show = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- New Tag Modal -->
+
+            <!-- Add expression to Tag Modal -->
+            <div class="custom-modal-container" v-show="addToTag.modalOpen">
+                <div class="custom-modal-content">
+                    <div class="card">
+                        <h5 class="card-header">Add to a tag</h5>
+                        <div class="card-body">
+                            <label for="expression_url">Expression</label>
+                            <div v-for="(expression, index) in addToTag.expressions" class="input-group mb-1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary text-small" type="button" style="border-radius: 4px 0 0 4px;" @click="expression.expression = addToTag.backlinks[index]">Full URL</button>
+                                </div>
+                                <input type="text" class="form-control text-regular" v-model="expression.expression" placeholder="yelp.com or yellowpage or any keyword">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary text-small" type="button" style="border-radius: 0 4px 4px 0;" @click="removeExpression(index, addToTag.expressions, addToTag.backlinks)">X</button>
+                                </div>
+                            </div>
+                            <p class="text-small">Like a keyword, you can keep the URL or part of the URL as match criteria of the tag.</p>
+
+                            <label for="expression_url">Select Tag</label>
+                            <select v-model="addToTag.tag_id" class="form-select text-small mb-1">
+                                <option disabled value="">Please select a tag</option>
+                                <option v-for="tag in tags" :value="tag.id">{{tag.name}} - {{ tag.scope }}</option>
+                            </select>
+                            <p class="text-small">Select the existing tag from the list</p>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-end">
+                            <button class="btn btn-emerald text-regular" @click="addExpressionToTag()">Add to the selected tag</button>
+                            <button type="button" class="btn btn-danger text-regular" style="margin-left: 5px;" @click="addToTag.modalOpen = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Add expression to Tag Modal -->
+
+        </div>
+
+    </div>
+</div>
+{% endverbatim %}
+
+
+
+<script>
+
+
+    const urlswidget = {
+        data() {
+            return {
+                property: '',
+                backlinks: [],
+                tags: [],
+                
+                // New Tag
+                newTag: {
+                    name: '',
+                    expressions: [{'expression': ''}],
+                    scope: '',
+                    show: false
+                },
+
+                //add to tag
+                addToTag : {
+                    modalOpen: false,
+                    domain: '',
+                    expressions: [],
+                    backlinks: [],
+                    tag_id: ''
+                },
+                
+                selectedBacklinks: [],
+                selectedTags: ['Untagged'],
+
+                searchKeywords: '',
+                sort: {
+                    key: 'backlink',
+                    asc: false,
+                },
+                currentPage: 1,
+                itemsPerPage: 1000,
+            }
+        },
+        mounted() {
+            this.property = JSON.parse(document.getElementById('property_json').textContent);
+            this.backlinks = JSON.parse(document.getElementById('backlinks_json').textContent);
+            this.tags = JSON.parse(document.getElementById('tags_json').textContent);
+
+            this.computeBacklinkTags()
+        },
+
+        methods: {
+
+            openAddToTagModal(expressions){
+                this.addToTag.modalOpen = true;
+                this.addToTag.expressions = [];
+                this.addToTag.backlinks = [];
+
+                expressions.forEach(expression => {
+
+                    var matches = expression.match(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
+                    var domain = matches && matches[1];
+                    domain = domain.split('.').slice(-2).join('.');
+
+                    this.addToTag.backlinks.push(expression);
+                    this.addToTag.expressions.push({'expression': domain});
+                })
+            },
+
+            removeExpression(index, expressions, backlinks = []){
+                if(expressions.length > 1){
+                    expressions.splice(index, 1);
+                    backlinks.splice(index, 1);
+                }
+            },
+
+            addExpressionToTag(){
+                // POST request using fetch with error handling
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {'X-CSRFTOKEN': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+                    body: JSON.stringify({...this.addToTag, property: this.property.property})
+                };
+
+                fetch('/tags/add-expression', requestOptions)
+                    .then(response =>  response.json())
+                    .then(data => {
+                        if(data.tags){
+                            this.tags = data.tags;
+                            this.computeBacklinkTags();
+                            this.addToTag.modalOpen = false;
+                        }
+                        if(data.msg){
+                            alert(data.msg);
+                        }
+                    })
+                    .catch(error => {
+                        alert('There was an error!', error);
+                        console.log(error)
+                    })
+            },
+
+
+
+
+            addExpressionField(){
+                this.newTag.expressions.push({'expression': ''});
+            },
+
+            saveTag(){
+                
+                // POST request using fetch with error handling
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {'X-CSRFTOKEN': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+                    body: JSON.stringify({...this.newTag, property: this.property.property})
+                };
+
+                fetch('/tag/create', requestOptions)
+                    .then(response =>  response.json())
+                    .then(data => {
+                        if(data.tags){
+                            this.tags = data.tags;
+                            this.computeBacklinkTags();
+                            this.newTag = {
+                                name: '',
+                                expressions: [{'expression': ''}],
+                                scope: '',
+                                show: false
+                            }
+                        } 
+                        if(data.msg){
+                            alert(data.msg);
+                        }
+                    })
+                    .catch(error => {
+                        alert('There was an error!', error);
+                        console.log(error)
+                    })
+            },
+
+            computeBacklinkTags() {
+                // Tagging all backlinks as untagged for now
+                this.backlinks.forEach(backlink => {
+                    backlink.tags = ['Untagged'];
+                });
+
+                // Now tagging backlinks with appropriate tags
+                this.backlinks.forEach(backlink => {
+                    this.tags.forEach(tag => {
+                        tag.expressions.forEach( expression => {
+                            if ( expression.expression != "" && backlink.backlink.includes(expression.expression) ){
+                                
+                                // Removes the Untagged tag before tagging the URL with a tag
+                                backlink.tags = _.without(backlink.tags, 'Untagged')
+
+                                //Add the tag if not already tagged
+                                if ( ! backlink.tags.includes(tag.name) ){
+                                    backlink.tags.push(tag.name);
+                                }
+                                
+                            }
+                        });
+                    });
+                });
+            },
+
+
+            
+
+            formatDate(value) {
+                if (value) {
+                    return new Date(String(value)).toLocaleString()
+                }
+                return "None";
+            },
+
+            updateSort(key) {
+                console.log('sorting', key);
+                this.sort.key = key;
+                this.sort.asc = !this.sort.asc
+            },
+
+            changePage(page) {
+                this.currentPage = page;
+            },
+
+            exportCSV() {
+                const csvString = [
+                    [
+                        "Backlinks",
+                        "Tags",
+                        "Domain Authority",
+                        "GSC Crawled At",
+                        "First Collected At"
+                    ],
+                    ...this.filteredBacklinks.map(item => [
+                        item.backlink,
+                        item.tags.join(","),
+                        item.authority,
+                        this.formatDate(item.crawled_at).replace(/,/g, ''),
+                        this.formatDate(item.created_at).replace(/,/g, '')
+                    ])
+                ]
+                    .map(e => e.join(","))
+                    .join("\n");
+
+                var encodedUri = 'data:text/csv;charset=utf-8,' + encodeURI(csvString);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "backlinks.csv");
+                document.body.appendChild(link);
+                link.click();
+            }
+        },
+        computed: {
+
+            filteredBacklinks: function() {
+                var filtered = this.backlinks
+
+                if (this.selectedTags.length > 0) {
+                    filtered = filtered.filter(backlink => this.selectedTags.some( tag => backlink.tags.includes(tag) ))
+                }
+
+                if (this.searchKeywords.length > 0) {
+                    var keywords = this.searchKeywords.split(' ');
+                    keywords.forEach(keyword => {
+                        filtered = filtered.filter(backlink => (keyword.startsWith("-")) ? !backlink.backlink.toLowerCase().includes(keyword.substring(1).toLowerCase()) : backlink.backlink.toLowerCase().includes(keyword.toLowerCase()))
+                    });
+                }
+
+                var name = 'backlink'
+                
+                if(this.sort.key){
+                    filtered.sort((a, b) => {
+                        if (this.sort.asc) {
+                            return a[this.sort.key] > b[this.sort.key];
+                        } else {
+                            return b[this.sort.key] > a[this.sort.key];
+                        }
+                    });
+                }
+
+                return filtered;
+            },
+
+            pages: function () {
+                return Math.ceil(this.filteredBacklinks.length / this.itemsPerPage);
+            },
+
+            pageBacklinks: function () {
+                return this.filteredBacklinks.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage)
+            }
+
+        }
+    }
+
+    const app = Vue.createApp(urlswidget).mount('#urlswidget')
+
+</script>
+
+{% endblock %}

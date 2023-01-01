@@ -7,6 +7,19 @@
     {% include 'navigation.html' %}
 
     <div class="content-area dark-scheme px-3 py-4">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="fad fa-check-circle" style="margin-right: 10px;"></i>
+                <div>
+                    {{ message }}
+                </div>
+            </div>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
 
         {% block content-area %}
         {% endblock %}

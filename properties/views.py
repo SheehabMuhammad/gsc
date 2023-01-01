@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout, get_user_model
@@ -9,8 +9,10 @@ from django.urls import reverse
 from django.db.models import Q, Count
 from django.utils import timezone
 import pytz
+from django.http import JsonResponse
+import json
 
-from .models import Property, Url, Log, Filter
+from .models import Property, Url, Log, Filter, Backlink, Tag 
 
 
 def user_login(request):
@@ -63,13 +65,12 @@ def index(request):
 
 @login_required(login_url="/login/")
 def properties(request):
-
     timezone.activate(pytz.timezone("America/Chicago"))
-
     if request.method == "POST":
 
         property = request.POST["property"]
         type = request.POST["type"]
+
         if type and property:
             if type == "domain":
                 resource_id = "sc-domain:" + property
@@ -108,10 +109,7 @@ def property_scrape(request, property_id):
     property = Property.objects.get(pk=property_id)
     property.scrape_priority = "high"
     property.save()
-    messages.info(
-        request,
-        "Property tranferred to high priority scraper, scraping will be completed in the next few minutes. Priority will reset after URLs are scraped from GSC.",
-    )
+    messages.info(request,"Property tranferred to high priority scraper, scraping will be completed in the next few minutes. Priority will reset after URLs are scraped from GSC.",)
     return redirect(reverse("properties"))
 
 
@@ -144,7 +142,7 @@ def property_urls(request, property_id):
 
 
 @login_required(login_url="/login/")
-def property_links(request, property_id):
+def property_backlinks(request, property_id):
     timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.get(id=property_id)
@@ -154,23 +152,125 @@ def property_links(request, property_id):
 
     properties = Property.objects.all()
 
-    urls = property.url_set.all().order_by("id")
-    filters = Filter.objects.all().order_by("-type")
+    urls = property.backlink_set.all().order_by("id")
+    tags = Tag.objects.filter(Q(scope='universal') | Q(scope=property.property))
 
-    urls_json = list(urls.values())
-    filters_json = list(filters.values())
+    backlinks_json = list(urls.values())
+    tags_json = list(tags.values())
 
     context = {
-        "property" : property,
-        "urls_json": urls_json,
-        "filters_json": filters_json,
         "properties": properties,
-        "filters": filters,
+        "property" : property,
+        "property_json" : {"id": property.id, "property": property.property},
+        "backlinks_json": backlinks_json,
+        "tags_json": tags_json,
     }
 
-    return render(request, "links/index.html", context)
+    return render(request, "backlinks/index.html", context)
 
 
+@login_required(login_url="/login/")
+def tags(request):
+    timezone.activate(pytz.timezone("America/Chicago"))
+
+    tags = Tag.objects.all()
+    tags_json = list(tags.values())
+    return render(request, "tags/index.html", {"tags": tags, "tags_json": tags_json,})
+
+
+@login_required(login_url="/login/")
+def create_tag(request):
+    timezone.activate(pytz.timezone("America/Chicago"))
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        name = data['name']
+        expressions = data['expressions']
+        scope = data['scope']
+        property = data['property']
+
+        if name and expressions and scope:
+            try:
+                tag = Tag(
+                    name=name,
+                    expressions=expressions,
+                    scope=scope,
+                )
+                tag.save()
+                tags = Tag.objects.filter(Q(scope='universal') | Q(scope=property))
+                return JsonResponse({ "tags": list(tags.values()) }, status=200)
+
+            except Exception as e:
+                response = "Could not add the tag, error: "+str(e)
+        else:
+            response = "Tag could not be added, check if all fields are satisfied."
+        
+        return JsonResponse({"msg":response}, status=201)
+
+
+@login_required(login_url="/login/")
+def update_tag(request):
+    timezone.activate(pytz.timezone("America/Chicago"))
+    if request.method == "POST":
+        data = json.loads(request.body)
+        expressions = data['expressions']
+
+        if expressions:
+            try:
+                tag = Tag.objects.get(pk=data['id'])
+                tag.expressions = unique_expressions(expressions)
+                tag.save()
+
+                messages.info(request, "Tag updated")
+
+                response = "Tag successfully updated"
+
+            except Exception as e:
+                print(e)
+                response = "Could not add the tag, error: "+str(e)
+        else:
+            response = "Tag could not be updated, check if all fields are satisfied."
+        
+        return JsonResponse({"msg":response}, status=201)
+
+
+@login_required(login_url="/login/")
+def delete_tag(request, tag_id):
+    timezone.activate(pytz.timezone("America/Chicago"))
+
+    tag = Tag.objects.get(id=tag_id)
+    tag.delete()
+    messages.success(request, "Tag deleted.")
+
+    return redirect(tags)
+
+@login_required(login_url="/login/")
+def add_expression_to_tag(request):
+    timezone.activate(pytz.timezone("America/Chicago"))
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        expressions = data['expressions']
+        tag_id = data['tag_id']
+        property = data['property']
+
+        if  expressions and tag_id and property:
+            try:
+                tag = Tag.objects.get(pk=tag_id)
+                tag.expressions = unique_expressions(tag.expressions + expressions)
+                tag.save()
+
+                tags = Tag.objects.filter(Q(scope='universal') | Q(scope=property))
+                return JsonResponse({ "tags": list(tags.values()) }, status=200)
+
+            except Exception as e:
+                response = "Could not add the tag, error: "+str(e)
+        else:
+            response = "Tag could not be updated, check if all fields are satisfied."
+
+        return JsonResponse({"msg":response}, status=400)
 
 @login_required(login_url="/login/")
 def logs(request):
@@ -180,7 +280,6 @@ def logs(request):
 
 
 def sync_filters(request):
-
     coverages = Url.objects.order_by().values_list("c_status", "c_type").distinct()
     for coverage in coverages:
         # Create new coverage status filter
@@ -208,3 +307,14 @@ def sync_filters(request):
         except ObjectDoesNotExist:
             filter = Filter(name="mu_status", value=mu[0], type=mu[0])
             filter.save()
+
+
+def unique_expressions(expressions):
+    unique_marker = []
+    unique_expressions = []
+    for item in expressions:
+        if item['expression'] not in unique_marker and bool(item['expression']):
+            unique_marker.append(item['expression'])
+            unique_expressions.append(item)
+
+    return unique_expressions
