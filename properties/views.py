@@ -7,9 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q, Count
-from django.db.models.functions import TruncDay
 from django.utils import timezone
-from datetime import datetime, timedelta
 import pytz
 
 from .models import Property, Url, Log, Filter
@@ -46,34 +44,19 @@ def user_logout(request):
 def index(request):
 
     properties = Property.objects.all()
-
-    some_day_last_week = datetime.now() - timedelta(days=20)
-
-    print("day: ", some_day_last_week)
+    logs = Log.objects.all().order_by("-id")[:10]
 
     urls_by_date = (
-        Url.objects.filter(
-            created_at__gte=some_day_last_week,
-        )
-        .annotate(
-            day=TruncDay("created_at"),
-            created_count=Count("created_at__date"),
-        )
-        .values(
-            "day",
-            "created_count",
-        )
+        Url.objects.extra({"day": "date(created_at)"})
+        .values("day")
+        .annotate(created_count=Count("id"))
     )
-
-    logs = Log.objects.all()
 
     context = {
         "properties": properties,
         "urls_by_date": urls_by_date,
         "logs": logs,
     }
-
-    print(urls_by_date)
 
     return render(request, "overview/index.html", context)
 
@@ -94,7 +77,10 @@ def properties(request):
                 resource_id = property
             try:
                 property = Property(
-                    property=property, resource_id=resource_id, owner_id=request.user.id
+                    property=property,
+                    resource_id=resource_id,
+                    owner_id=request.user.id,
+                    scrape_priority="high",
                 )
                 property.save()
                 messages.success(request, "Property registred.")
@@ -124,7 +110,7 @@ def property_scrape(request, property_id):
     property.save()
     messages.info(
         request,
-        "Property tranferred to high priority scraper, scraping will be completed in next minutes.",
+        "Property tranferred to high priority scraper, scraping will be completed in the next few minutes. Priority will reset after URLs are scraped from GSC.",
     )
     return redirect(reverse("properties"))
 
@@ -134,157 +120,91 @@ def property_urls(request, property_id):
     timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.get(id=property_id)
+
+    request.session["property_id"] = property.id
+    request.session["property"] = property.property
+
     properties = Property.objects.all()
-    urls = property.url_set.all()
-    filters = Filter.objects.all()
 
-    c_type = request.GET.getlist("c_type[]")
-    c_status = request.GET.getlist("c_status[]")
-    mu_type = request.GET.getlist("mu_type[]")
-    mu_status = request.GET.getlist("mu_status[]")
-    search = request.GET.get("search")
+    urls = property.url_set.all().order_by("id")
+    filters = Filter.objects.all().order_by("-type")
 
-    if c_type:
-        urls = urls.filter(c_type__in=c_type)
-    if c_status:
-        urls = urls.filter(c_status__in=c_status)
-    if mu_type:
-        urls = urls.filter(mu_type__in=mu_type)
-    if mu_status:
-        urls = urls.filter(mu_status__in=mu_status)
-    if search:
-        urls = urls.filter(url__icontains=search)
-
-    # Show 1000 urls per page
-    paginator = Paginator(urls, 1000)
-
-    page = request.GET.get("page")
-
-    try:
-        urls = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        urls = paginator.page(1)
-
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        urls = paginator.page(paginator.num_pages)
+    urls_json = list(urls.values())
+    filters_json = list(filters.values())
 
     context = {
-        "property": property,
-        "urls": urls,
+        "property" : property,
+        "urls_json": urls_json,
+        "filters_json": filters_json,
         "properties": properties,
         "filters": filters,
-        "c_status": c_status,
-        "c_type": c_type,
-        "mu_status": mu_status,
-        "mu_type": mu_type,
-        "search": search,
-        "show_selector": True,
     }
 
     return render(request, "urls/index.html", context)
 
 
 @login_required(login_url="/login/")
-def urls(request):
+def property_links(request, property_id):
     timezone.activate(pytz.timezone("America/Chicago"))
 
+    property = Property.objects.get(id=property_id)
+
+    request.session["property_id"] = property.id
+    request.session["property"] = property.property
+
     properties = Property.objects.all()
-    urls = Url.objects.all()
 
-    filters = Filter.objects.all()
+    urls = property.url_set.all().order_by("id")
+    filters = Filter.objects.all().order_by("-type")
 
-    c_type = request.GET.getlist("c_type[]")
-    c_status = request.GET.getlist("c_status[]")
-    mu_type = request.GET.getlist("mu_type[]")
-    mu_status = request.GET.getlist("mu_status[]")
-    search = request.GET.get("search")
-
-    if c_type:
-        urls = urls.filter(c_type__in=c_type)
-    if c_status:
-        urls = urls.filter(c_status__in=c_status)
-    if mu_type:
-        urls = urls.filter(mu_type__in=mu_type)
-    if mu_status:
-        urls = urls.filter(mu_status__in=mu_status)
-    if search:
-        urls = urls.filter(url__icontains=search)
-
-    # Show 1000 urls per page
-    paginator = Paginator(urls, 1000)
-
-    page = request.GET.get("page")
-
-    try:
-        urls = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        urls = paginator.page(1)
-
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        urls = paginator.page(paginator.num_pages)
+    urls_json = list(urls.values())
+    filters_json = list(filters.values())
 
     context = {
+        "property" : property,
+        "urls_json": urls_json,
+        "filters_json": filters_json,
         "properties": properties,
-        "urls": urls,
         "filters": filters,
-        "c_status": c_status,
-        "c_type": c_type,
-        "mu_status": mu_status,
-        "mu_type": mu_type,
-        "search": search,
-        "show_selector": True,
     }
 
-    return render(request, "urls/index.html", context)
+    return render(request, "links/index.html", context)
+
 
 
 @login_required(login_url="/login/")
 def logs(request):
     timezone.activate(pytz.timezone("America/Chicago"))
-    logs = Log.objects.all()
+    logs = Log.objects.all().order_by("-id")
     return render(request, "logs/index.html", {"logs": logs})
 
 
-@login_required(login_url="/login/")
-def url(request, url_id):
-    timezone.activate(pytz.timezone("America/Chicago"))
-    url = Url.objects.all()
-    return render(request, "url/index.html", {"url": url})
-
-
 def sync_filters(request):
-    c_status = Url.objects.order_by().values_list("c_status", flat=True).distinct()
-    for status in c_status:
+
+    coverages = Url.objects.order_by().values_list("c_status", "c_type").distinct()
+    for coverage in coverages:
+        # Create new coverage status filter
         try:
-            filter = Filter.objects.get(name="c_status", value=status)
+            filter = Filter.objects.get(
+                name="c_status", value=coverage[0], type=coverage[0]
+            )
         except ObjectDoesNotExist:
-            filter = Filter(name="c_status", value=status)
+            filter = Filter(name="c_status", value=coverage[0], type=coverage[0])
             filter.save()
 
-    c_type = Url.objects.order_by().values_list("c_type", flat=True).distinct()
-    for status in c_type:
         try:
-            filter = Filter.objects.get(name="c_type", value=status)
+            filter = Filter.objects.get(
+                name="c_type", value=coverage[1], type=coverage[0]
+            )
         except ObjectDoesNotExist:
-            filter = Filter(name="c_type", value=status)
+            filter = Filter(name="c_type", value=coverage[1], type=coverage[0])
             filter.save()
 
-    mu_status = Url.objects.order_by().values_list("mu_status", flat=True).distinct()
-    for status in mu_status:
+    mus = Url.objects.order_by().values_list("mu_status", "mu_type").distinct()
+    for mu in mus:
+        # Create new coverage status filter
         try:
-            filter = Filter.objects.get(name="mu_status", value=status)
+            filter = Filter.objects.get(name="mu_status", value=mu[0], type=mu[0])
         except ObjectDoesNotExist:
-            filter = Filter(name="mu_status", value=status)
-            filter.save()
-
-    mu_type = Url.objects.order_by().values_list("mu_type", flat=True).distinct()
-    for status in mu_type:
-        try:
-            filter = Filter.objects.get(name="mu_type", value=status)
-        except ObjectDoesNotExist:
-            filter = Filter(name="mu_type", value=status)
+            filter = Filter(name="mu_status", value=mu[0], type=mu[0])
             filter.save()

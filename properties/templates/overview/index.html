@@ -18,8 +18,8 @@
                     </div>
 
                     <div class="actions">
-                        <a href="{% url 'urls' %}" class="btn btn-small btn-emerald">
-                            <i class="fad fa-link"></i> Browse URLs
+                        <a href="{% url 'properties' %}" class="btn btn-small btn-emerald">
+                            <i class="fas fa-globe-americas"></i> Browse Properties
                         </a>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                     </div>
                     <div class="actions">
                         <a href="{% url 'logs' %}" class="btn btn-small btn-dark">
-                            <i class="fad fa-clipboard-list"></i> See all
+                            <i class="fad fa-clipboard-list"></i> All logs
                         </a>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                                         {{ log.property }}</td>
                                     <td>Type: {{ log.type }}</td>
                                     <td>Scraped URLs: {{ log.num_urls }}</td>
-                                    <td>Duration: {{ log.time_taken }}</td>
+                                    <td>Duration: {{ log.time_taken }} sec</td>
                                     <td>
                                         {{ log.created_at|date:"m/d/y, h:ia" }}
                                     </td>

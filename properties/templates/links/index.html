@@ -1,0 +1,368 @@
+{% extends 'base-admin.html' %}
+
+{% block content-area %}
+
+{{ filters_json|json_script:"filters_json" }}
+{{ urls_json|json_script:"urls_json" }}
+
+
+<div class="">
+
+    <div class="row">
+
+        <div class="col-lg-12 col-md-12">
+
+            <div id="urlswidget" class="widget mb-4">
+
+                <div class="widget-header">
+                    <div class="labels">
+                        <h3 class="title text-lato">
+                            All latest external links
+                            {% if property.property %}
+                            of {{ property.property }}
+                            {% endif %}
+                        </h3>
+                        <span class="text-tiny text-secondary">collected everyday from GSC, and showing in ascending order</span>
+                    </div>
+
+                    <div class="actions d-flex align-items-center">
+                        <div class="mx-2">
+                            <button class="btn btn-small btn-emerald" data-bs-target="#propertyModal"
+                                data-bs-toggle="modal" data-bs-dismiss="modal">
+                                <i class="fad fa-plus-circle"></i> Add property
+                            </button>
+                        </div>
+                        <div>
+                            {% verbatim %}
+                            <a @click="exportCSV" class="btn btn-small btn-emerald">
+                                <i class="fad fa-cloud-download-alt"></i> Export
+                            </a>
+                            {% endverbatim %}
+                        </div>
+
+                    </div>
+                </div>
+
+                {% verbatim %}
+                <div class="widget-content">
+
+                    <form class="filters" method="GET"
+                        style="padding: 18px;background: rgba(100, 100, 100, 0.1);border-radius: 7px;">
+                        <div class="row">
+                            <h4 style="font-size: 16px;">Filters</h4>
+
+                            <div class="col-md-12 mb-4">
+                                <input v-model="searchKeywords" class="form-control" type="text"
+                                    placeholder="Search keywords in URL (use '-' to exclude keyword)">
+                            </div>
+
+                            <div class="col-md-3">
+                                <p class="filter-label">Select Coverage Status</p>
+
+                                <div v-for="filter in c_status_filters" class="form-check">
+                                    <input class="form-check-input" type="checkbox" :value="filter.value"
+                                        :id="'c-status-'+filter.id" v-model="cStatus" />
+                                    <label :class="'form-check-label '+ filter.type" :for="'c-status-'+filter.id">
+                                        {{ filter.value }} <sup>{{ filter.count }}</sup>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="filter-label">Select Mobile Usability Status</p>
+
+                                <div v-for="filter in mu_status_filters" class="form-check">
+                                    <input name="mu_status[]" class="form-check-input" type="checkbox"
+                                        :value="filter.value" :id="'mu-status-'+filter.id" v-model="muStatus" />
+                                    <label v-bind:class=" 'form-check-label '+ filter.type"
+                                        :for="'mu-status-'+filter.id">
+                                        {{ filter.value }} <sup>{{ filter.count }}</sup>
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-5">
+                                <p class="filter-label">Select Coverage Type</p>
+
+                                <div v-for="filter in c_type_filters" class="form-check">
+                                    <input name="c_type[]" class="form-check-input" type="checkbox"
+                                        :value="filter.value" :id="'c-type-'+filter.id" v-model="cType" />
+                                    <label v-bind:class=" 'form-check-label '+ filter.type" :for="'c-type-'+filter.id">
+                                        {{ filter.value }} <sup>{{ filter.count }}</sup>
+                                    </label>
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+                    </form>
+
+                    <div style="margin: 15px 0;">
+                        <span class="text-small text-muted">
+                            Filtered {{ filteredUrls.length }} of {{ urls.length }} URLs
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-list">
+                            <thead>
+                                <tr class="text-small list-header">
+
+                                    <th @click="sort('url')" scope="col" style="cursor: pointer;">
+                                        <span class="badge bg-secondary">Links <i class="fad fa-sort-circle text-emerald"></i></span>
+                                    </th>
+
+                                    <th @click="sort('c_type')" scope="col" style="cursor: pointer;">
+                                        <span class="badge bg-secondary">Tags <i class="fad fa-sort-circle text-emerald"></i></span>
+                                    </th>
+
+                                    <th @click="sort('c_type')" scope="col" style="cursor: pointer;">
+                                        <span class="badge bg-secondary">Domain Authority <i class="fad fa-sort-circle text-emerald"></i></span>
+                                    </th>
+                                    
+                                    <th @click="sort('crawled_at')" scope="col" style="cursor: pointer;">
+                                        <span class="badge bg-secondary">GSC Crawled At<i class="fad fa-sort-circle text-emerald"></i></span>
+                                    </th>
+
+                                    <th @click="sort('created_at')" scope="col" style="cursor: pointer;">
+                                        <span class="badge bg-secondary">First Collected At <i class="fad fa-sort-circle text-emerald"></i></span>
+                                    </th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody class="list-body text-small">
+
+                                <tr v-for="url in pageUrls">
+                                    <td>
+                                        <a :href="url.url" target="_blank" rel="noopener noreferrer"
+                                            class="inherit-color url">
+                                            {{ url.url }} <i class="fad fa-share text-emerald"></i>
+                                        </a>
+                                    </td>
+
+                                    <td>Spam</td>
+
+                                    <td>0-100</td>
+
+                                    <td>{{ formatDate(url.crawled_at) }}</td>
+
+                                    <td>{{ formatDate(url.created_at) }}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="widget-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="text-small text-muted">
+                                Showing {{ pageUrls.length }} of {{ filteredUrls.length }} items
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" :class="{'disabled': currentPage == 1}">
+                                        <a class="page-link" href="#" aria-label="Previous"
+                                            @click.prevent="changePage(currentPage - 1)">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" v-for="page in pages"
+                                        :class="{'active': page == currentPage}">
+                                        <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+                                    </li>
+                                    <li class="page-item" :class="{'disabled': currentPage == pages}">
+                                        <a class="page-link" href="#" aria-label="Next"
+                                            @click.prevent="changePage(currentPage + 1)">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    {% endverbatim %}
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+
+    const urlswidget = {
+        data() {
+            return {
+                urls: [],
+                //filteredUrls: [],
+                filters: [],
+
+                cStatus: [],
+                cType: [],
+                muStatus: [],
+
+                searchKeywords: '',
+                sorted: false,
+                currentPage: 1,
+                itemsPerPage: 1000,
+            }
+        },
+        mounted() {
+            this.urls = JSON.parse(document.getElementById('urls_json').textContent);
+            this.filters = JSON.parse(document.getElementById('filters_json').textContent);
+
+            // Counting urls by filters
+            this.filters.forEach(filter => {
+                filter.count = 0;
+            });
+
+            this.urls.forEach(url => {
+                this.filters.forEach(filter => {
+                    if (filter.value == url.c_status && filter.name == 'c_status') {
+                        filter.count += 1;
+                    }
+
+                    if (filter.value == url.c_type && filter.name == 'c_type') {
+                        filter.count += 1;
+                    }
+
+                    if (filter.value == url.mu_status && filter.name == 'mu_status') {
+                        filter.count += 1;
+                    }
+                });
+            });
+
+        },
+        methods: {
+
+            formatDate(value) {
+                if (value) {
+                    return new Date(String(value)).toLocaleString()
+                }
+                return "None";
+            },
+
+            sort(key) {
+                this.sorted = !this.sorted;
+                this.filteredUrls.sort((a, b) => {
+                    if (this.sorted) {
+                        return a[key].localeCompare(b[key]);
+                    } else {
+                        return b[key].localeCompare(a[key]);
+                    }
+                });
+            },
+
+            changePage(page) {
+                this.currentPage = page;
+            },
+
+            exportCSV() {
+                const csvString = [
+                    [
+                        "URLs",
+                        "Coverage Type",
+                        "Coverage Status",
+                        "Crawled",
+                        "Mobile Usablity Type",
+                        "Mobile Usablity Status",
+                        "Detected",
+                        "Created At"
+                    ],
+                    ...this.filteredUrls.map(item => [
+                        item.url,
+                        item.c_type,
+                        item.c_status,
+                        this.formatDate(item.crawled_at).replace(/,/g, ''),
+                        item.mu_type,
+                        item.mu_status,
+                        this.formatDate(item.detected_at).replace(/,/g, ''),
+                        this.formatDate(item.created_at).replace(/,/g, '')
+                    ])
+                ]
+                    .map(e => e.join(","))
+                    .join("\n");
+
+                var encodedUri = 'data:text/csv;charset=utf-8,' + encodeURI(csvString);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "urls.csv");
+                document.body.appendChild(link);
+
+                link.click();
+            }
+        },
+        computed: {
+
+            c_status_filters: function () {
+                return _.orderBy( this.filters.filter(filter => filter.name === 'c_status'), ['type', 'count'], ['desc', 'desc']);
+            },
+            c_type_filters: function () {
+                return _.orderBy( this.filters.filter(filter => filter.name === 'c_type'), ['type', 'count'], ['desc', 'desc']);
+            },
+            mu_status_filters: function () {
+                return _.orderBy( this.filters.filter(filter => filter.name === 'mu_status'), ['type', 'count'], ['desc', 'desc']);
+            },
+
+            filteredUrls: function() {
+                var filteredUrls = this.urls
+
+                if (this.cStatus.length > 0) {
+                    filteredUrls = filteredUrls.filter(url => this.cStatus.includes(url.c_status))
+                }
+
+                if (this.cType.length > 0) {
+                    filteredUrls = filteredUrls.filter(url => this.cType.includes(url.c_type))
+                }
+
+                if (this.muStatus.length > 0) {
+                    filteredUrls = filteredUrls.filter(url => this.muStatus.includes(url.mu_status))
+                }
+
+                if (this.searchKeywords.length > 0) {
+                    var keywords = this.searchKeywords.split(' ');
+                    keywords.forEach(keyword => {
+                        filteredUrls = filteredUrls.filter(url => (keyword.startsWith("-")) ? !url.url.toLowerCase().includes(keyword.substring(1).toLowerCase()) : url.url.toLowerCase().includes(keyword.toLowerCase()))
+                    });
+                }
+
+                return filteredUrls;
+
+            },
+
+            pages: function () {
+                return Math.ceil(this.filteredUrls.length / this.itemsPerPage);
+            },
+
+            pageUrls: function () {
+                return this.filteredUrls.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage)
+            }
+
+        }
+    }
+
+    const app = Vue.createApp(urlswidget).mount('#urlswidget')
+
+</script>
+
+{% endblock %}

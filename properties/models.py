@@ -24,19 +24,11 @@ class Property(models.Model):
 class Url(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     url = models.URLField()
-    c_type = models.CharField(
-        blank=True, default="Not listed", null=True, max_length=255
-    )
-    c_status = models.CharField(
-        blank=True, default="Not listed", null=True, max_length=255
-    )
+    c_type = models.CharField(blank=True, default="Not listed", null=True, max_length=255)
+    c_status = models.CharField(blank=True, default="Not listed", null=True, max_length=255)
     crawled_at = models.DateTimeField(default=None, null=True)
-    mu_type = models.CharField(
-        default="Not listed", blank=True, null=True, max_length=255
-    )
-    mu_status = models.CharField(
-        default="Not listed as mobile friendly", blank=True, null=True, max_length=255
-    )
+    mu_type = models.CharField(default="Not listed", blank=True, null=True, max_length=255)
+    mu_status = models.CharField(default="Not listed as mobile friendly", blank=True, null=True, max_length=255)
     detected_at = models.DateTimeField(default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -55,6 +47,7 @@ class Url(models.Model):
 class Filter(models.Model):
     name = models.CharField(max_length=255)
     value = models.CharField(max_length=255)
+    type = models.CharField(default="Unknown", max_length=255)
 
     def __str__(self):
         return self.value
@@ -62,7 +55,7 @@ class Filter(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "value"], name="unique filter constraint"
+                fields=["name", "value", "type"], name="unique filter constraint"
             )
         ]
 

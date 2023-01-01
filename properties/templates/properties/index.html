@@ -9,52 +9,6 @@
 
         <div class="col-lg-12 col-md-12">
 
-            <div class="modal fade text-regular" id="propertyModal" aria-hidden="true"
-                aria-labelledby="propertyModalToggleLabel" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <form method="POST" class="modal-content">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalToggleLabel">Add a property</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Please fill in the form to register a property with GSC dashboard Application.</p>
-
-                            <div class="form-group mb-2">
-                                <input type="text" class="form-control text-regular" name="property"
-                                    placeholder="GSC Property(i.e. https://www.example.com)">
-
-                            </div>
-
-                            <p>Select Property Type</p>
-                            <div class="form-group mb-2">
-                                <input name="type" class="form-check-input" type="radio" value="domain"
-                                    id="type_domain" />
-                                <label class="form-check-label" for="type_domain">
-                                    Domain
-                                </label>
-
-                                <input name="type" class="form-check-input" type="radio" value="url-prefix"
-                                    id="type_url" />
-                                <label class="form-check-label" for="type_url">
-                                    URL Prefix
-                                </label>
-                            </div>
-
-
-                            <p>PS: It is very imporant that the property exactly match with GSC Domain/URL
-                                Prefix otherwise the scraper will fail to scrape the domain/url prefix from GSC.</p>
-                            <div class="modal-footer">
-                                <input class="btn btn-small btn-emerald" type="submit" value="Register">
-
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-
             <div class="widget mb-4">
 
                 <div class="widget-header">
@@ -75,7 +29,7 @@
                     {% if messages %}
                     <ul class="messages">
                         {% for message in messages %}
-                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
                             <i class="fad fa-check-circle"></i>
                             <div>
                                 &nbsp;{{ message }}
@@ -97,7 +51,7 @@
                                     <th><span>Domain/URL Prefix</span></th>
                                     <th><span>Scrape Priority</span></th>
                                     <th><span>Last Scrape</span></th>
-                                    <th><span>Created At</span></th>
+                                    <th><span>Registered</span></th>
                                     <th><span>Actions</span></th>
                                 </tr>
                             </thead>
@@ -110,21 +64,30 @@
                                         <span class="text-emerald">{{ property.id }}</span>
                                     </td>
 
-                                    <td>{{ property.property }}</td>
+                                    <td>
+                                        <a href="{% url 'property_urls' property.id %}" class="inherit-color">
+                                            {{ property.property }}
+                                        </a>
+                                    </td>
                                     <td>{{ property.scrape_priority|title }}</td>
                                     <td>{{ property.last_scraped }}</td>
                                     <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>
 
                                     <td>
                                         <div class="actions">
-
-                                            <a href="{% url 'property_scrape' property.id %}"
-                                                class="btn btn-small btn-emerald">
-                                                <i class="fad fa-sync-alt"></i> Fetch Now
-                                            </a>
                                             <a href="{% url 'property_urls' property.id %}"
                                                 class="btn btn-small btn-emerald">
                                                 <i class="fad fa-link"></i> URLs
+                                            </a>
+                                            
+                                            <a href="{% url 'property_links' property.id %}"
+                                                class="btn btn-small btn-emerald">
+                                                <i class="fad fa-arrow-up-right-from-square"></i> Links
+                                            </a>
+                                            
+                                            <a href="{% url 'property_scrape' property.id %}"
+                                                class="btn btn-small btn-emerald">
+                                                <i class="fad fa-sync-alt"></i> Fetch Now
                                             </a>
                                         </div>
                                     </td>

@@ -21,15 +21,18 @@ body {
 a {
     text-decoration: none;
 }
-
+.inherit-color {
+    color: inherit !important;
+}
+a:hover {
+    color: #26C994;
+}
 a img {
     max-width: 100%;
 }
-
 table th {
     font-weight: normal;
 }
-
 
 /* Overrides */
 
@@ -100,6 +103,20 @@ a.text-emerald:hover {
 .text-light-blue{
     color: #3ACBE9;
 }
+
+
+.Valid {
+    color: green;
+}
+
+.Excluded, .Not.listed.as.mobile.friendly {
+    color: #888;
+}
+
+.Error {
+    color: red;
+}
+
 
 
 /* Background Colors */
@@ -200,12 +217,13 @@ a.text-emerald:hover {
     margin-bottom: 10px;
 }
 .nav-branding {
-    margin-top: 20px;
+    margin-top: 10px;
     font-size: 20px;
     white-space: nowrap;
     color: rgb(40, 200, 150);
     text-align: center;
     font-weight: 700;
+    margin-bottom: 30px;
 }
 .sidebar-left.with-navigation .contents-middle {
     flex: 1 1 auto;
@@ -415,6 +433,11 @@ ul.messages li.error {
     cursor: pointer;
 }
 
+td a.url {
+    max-width: 550px;
+    display: inline-block;
+}
+
 
 /* Login Page */
 
@@ -585,7 +608,7 @@ ul.messages li.error {
         background: #272727 !important;
         border-color: #343434;
     }
-    /* Pagination Generic CSS 
+    /* Pagination Generic CSS
 
     .page-item.disabled .page-link {
         color: #6c757d;
