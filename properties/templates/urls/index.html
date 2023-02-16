@@ -334,10 +334,10 @@
         computed: {
 
             c_status_filters: function () {
-                return _.orderBy( this.filters.filter(filter => filter.name === 'c_status'), ['type', 'count'], ['desc', 'desc']);
+                return _.orderBy( this.filters.filter(filter => filter.name === 'c_status'), ['type', 'count'], ['asc', 'desc']);
             },
             c_type_filters: function () {
-                return _.orderBy( this.filters.filter(filter => filter.name === 'c_type'), ['type', 'count'], ['desc', 'desc']);
+                return _.orderBy( this.filters.filter(filter => filter.name === 'c_type'), ['type', 'count'], ['asc', 'desc']);
             },
             mu_status_filters: function () {
                 return _.orderBy( this.filters.filter(filter => filter.name === 'mu_status'), ['type', 'count'], ['desc', 'desc']);

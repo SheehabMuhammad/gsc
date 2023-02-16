@@ -81,10 +81,12 @@
                 </form>
 
                 <div class="d-flex my-3 gap-2">
+                    <button class="btn btn-small btn-emerald" @click="selectAll()" v-if="selectedBacklinks.length === 0">Select All</button>
+                    <button class="btn btn-small btn-danger" @click="selectedBacklinks = []" v-if="selectedBacklinks.length != 0">Clear selection</button>
+
                     <button :disabled="selectedBacklinks.length == 0" type="button" class="btn btn-small btn-emerald" @click="openAddToTagModal(selectedBacklinks)">
                         <i class="fad fa-plus-circle"></i> Add selected {{ selectedBacklinks.length }} backlinks to a tag
                     </button>
-                    <button class="btn btn-small btn-danger" @click="selectedBacklinks = []" v-if="selectedBacklinks.length != 0">Clear selection</button>
                 </div>
 
                 <div class="table-responsive">
@@ -230,6 +232,12 @@
                                     <button class="btn btn-outline-secondary text-small" type="button" style="border-radius: 4px 0 0 4px;" @click="expression.expression = addToTag.backlinks[index]">Full URL</button>
                                 </div>
                                 <input type="text" class="form-control text-regular" v-model="expression.expression" placeholder="yelp.com or yellowpage or any keyword">
+                                
+                                <div class="form-control text-regular" style="max-width: 80px;">
+                                    <input type="checkbox" class="input-exact" :id="'input-exact-'+index" :checked="expression.exact" v-model="expression.exact">
+                                    <label :for="'input-exact-'+index" class="text-regular">&nbsp;Exact</label>
+                                </div>
+
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary text-small" type="button" style="border-radius: 0 4px 4px 0;" @click="removeExpression(index, addToTag.expressions, addToTag.backlinks)">X</button>
                                 </div>
@@ -237,8 +245,8 @@
                             <p class="text-small">Like a keyword, you can keep the URL or part of the URL as match criteria of the tag.</p>
 
                             <label for="expression_url">Select Tag</label>
-                            <select v-model="addToTag.tag_id" class="form-select text-small mb-1">
-                                <option disabled value="">Please select a tag</option>
+                            <select v-model="addToTag.tag_ids" class="form-select text-small mb-1" multiple>
+                                <option disabled value="">Please select a tag/tags</option>
                                 <option v-for="tag in tags" :value="tag.id">{{tag.name}} - {{ tag.scope }}</option>
                             </select>
                             <p class="text-small">Select the existing tag from the list</p>
@@ -284,9 +292,10 @@
                     domain: '',
                     expressions: [],
                     backlinks: [],
-                    tag_id: ''
+                    tag_ids: []
                 },
                 
+                selectedAll: false,
                 selectedBacklinks: [],
                 selectedTags: ['Untagged'],
 
@@ -309,10 +318,19 @@
 
         methods: {
 
+            selectAll(){
+                if(this.selectedBacklinks.length === 0){
+                    this.filteredBacklinks.forEach( backlink => {
+                        this.selectedBacklinks.push(backlink.backlink);
+                    })
+                }
+            },
+
             openAddToTagModal(expressions){
                 this.addToTag.modalOpen = true;
                 this.addToTag.expressions = [];
                 this.addToTag.backlinks = [];
+                this.addToTag.tag_ids = [];
 
                 expressions.forEach(expression => {
 
@@ -321,7 +339,7 @@
                     domain = domain.split('.').slice(-2).join('.');
 
                     this.addToTag.backlinks.push(expression);
-                    this.addToTag.expressions.push({'expression': domain});
+                    this.addToTag.expressions.push({'expression': domain, 'exact': false});
                 })
             },
 
@@ -357,9 +375,6 @@
                         console.log(error)
                     })
             },
-
-
-
 
             addExpressionField(){
                 this.newTag.expressions.push({'expression': ''});
@@ -407,24 +422,24 @@
                 this.backlinks.forEach(backlink => {
                     this.tags.forEach(tag => {
                         tag.expressions.forEach( expression => {
-                            if ( expression.expression != "" && backlink.backlink.includes(expression.expression) ){
-                                
-                                // Removes the Untagged tag before tagging the URL with a tag
-                                backlink.tags = _.without(backlink.tags, 'Untagged')
 
-                                //Add the tag if not already tagged
-                                if ( ! backlink.tags.includes(tag.name) ){
-                                    backlink.tags.push(tag.name);
-                                }
+                            if ( expression.expression != "") {
+                                if( (expression.exact === true && backlink.backlink === expression.expression ) || ( ! expression.exact && backlink.backlink.includes(expression.expression) ) ) {
                                 
+                                    // Removes the Untagged tag before tagging the URL with a tag
+                                    backlink.tags = _.without(backlink.tags, 'Untagged')
+
+                                    //Add the tag if not already tagged
+                                    if ( ! backlink.tags.includes(tag.name) ){
+                                        backlink.tags.push(tag.name);
+                                    }
+
+                                }
                             }
                         });
                     });
                 });
             },
-
-
-            
 
             formatDate(value) {
                 if (value) {

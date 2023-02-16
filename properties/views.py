@@ -214,12 +214,15 @@ def update_tag(request):
     timezone.activate(pytz.timezone("America/Chicago"))
     if request.method == "POST":
         data = json.loads(request.body)
+
+        name = data['name']
         expressions = data['expressions']
 
-        if expressions:
+        if expressions and name:
             try:
                 tag = Tag.objects.get(pk=data['id'])
                 tag.expressions = unique_expressions(expressions)
+                tag.name = name
                 tag.save()
 
                 messages.info(request, "Tag updated")
@@ -251,16 +254,18 @@ def add_expression_to_tag(request):
     
     if request.method == "POST":
         data = json.loads(request.body)
-
+        
         expressions = data['expressions']
-        tag_id = data['tag_id']
+        tag_ids = data['tag_ids']
         property = data['property']
 
-        if  expressions and tag_id and property:
+        if  expressions and tag_ids and property:
+
             try:
-                tag = Tag.objects.get(pk=tag_id)
-                tag.expressions = unique_expressions(tag.expressions + expressions)
-                tag.save()
+                for tag_id in tag_ids:
+                    tag = Tag.objects.get(pk=tag_id)
+                    tag.expressions = unique_expressions(tag.expressions + expressions)
+                    tag.save()
 
                 tags = Tag.objects.filter(Q(scope='universal') | Q(scope=property))
                 return JsonResponse({ "tags": list(tags.values()) }, status=200)

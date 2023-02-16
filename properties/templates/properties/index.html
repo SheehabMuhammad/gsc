@@ -25,7 +25,7 @@
                 <div class="widget-content">
 
 
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="padding-bottom: 80px;">
                         <table class="table table-list">
 
                             <thead class="list-header">
@@ -58,7 +58,7 @@
                                     <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>
 
                                     <td>
-                                        <div class="actions">
+                                        <div class="actions d-flex flex-wrap gap-1">
                                             <a href="{% url 'property_urls' property.id %}"
                                                 class="btn btn-small btn-emerald">
                                                 <i class="fad fa-link"></i> URLs
@@ -68,11 +68,25 @@
                                                 class="btn btn-small btn-emerald">
                                                 <i class="fad fa-external-link-square-alt"></i> Backlinks
                                             </a>
+                                            <div class="position-relative fetch-buttons-container">
+                                                <span class="btn btn-small btn-emerald"><i class="fad fa-sync-alt"></i> Fetch Now</span>
+                                                <div class="fetch-buttons position-absolute" >
+                                                    <a href="{% url 'property_scrape' property.id %}"
+                                                        class="btn btn-small btn-light">
+                                                        Coverage
+                                                    </a>
+                                                    <a href="{% url 'property_scrape' property.id %}"
+                                                        class="btn btn-small btn-light">
+                                                        M. Usability
+                                                    </a>
+                                                    <a href="{% url 'property_scrape' property.id %}"
+                                                        class="btn btn-small btn-light">
+                                                        Backlinks
+                                                    </a>
+                                                </div>
+                                            </div>
                                             
-                                            <a href="{% url 'property_scrape' property.id %}"
-                                                class="btn btn-small btn-emerald">
-                                                <i class="fad fa-sync-alt"></i> Fetch Now
-                                            </a>
+                                            
                                         </div>
                                     </td>
                                 </tr>

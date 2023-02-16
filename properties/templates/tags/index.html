@@ -15,7 +15,7 @@
             <div class="widget-header">
                 <div class="labels">
                     <h3 class="title text-lato">
-                        All Tags 
+                        All Tags
                     </h3>
                     <span class="text-tiny text-secondary">Tags are from all properties | Showing in ascending order</span>
                 </div>
@@ -46,7 +46,7 @@
                                 <th style="min-width: 120px;">
                                     <span class="badge bg-secondary">Action</span>
                                 </th>
-                                
+
                             </tr>
                         </thead>
                         <tbody class="list-body text-small">
@@ -57,9 +57,12 @@
                                         {{ tag.name }}
                                     </span>
                                 </td>
-                                
-                                <td><span v-for="expression in tag.expressions">| {{ expression.expression }} |, </span></td>
 
+                                <td>
+                                    <div class="expression-long" style="display: none"><span v-for="expression in  tag.expressions">|{{ expression.expression }}| </span></div>
+                                    <div class="expression-short"></div>
+                                </td>
+                                
                                 <td>{{ tag.scope }}</td>
 
                                 <td>
@@ -91,7 +94,7 @@
                                 <label>Tag Name:</label>
                                 <input type="text" v-model="toBeEditedTag.name" class="form-control text-regular" name="name" placeholder="Name of the tag">
                             </div>
-            
+
                             <div class="form-group mb-2">
                                 <div class="d-flex justify-content-between my-2">
                                     <label class="form-text-label" for="expression">Expression</label>
@@ -100,19 +103,25 @@
 
                                 <div class="input-group mb-3" v-for="(expression, index) in toBeEditedTag.expressions">
                                     <input name="expression" class="form-control text-regular" type="text" id="expression-2" placeholder="yelp.com or yellowpage or any keyword" v-model="expression.expression"/>
-                                    <div class="input-group-append">
-                                      <button @click="removeExpression(index)" class="btn btn-outline-secondary text-regular" type="button">Remove</button>
+
+                                    <div class="form-control text-regular" style="max-width: 80px;">
+                                        <input type="checkbox" class="input-exact" :id="'input-exact-'+index" :checked="expression.exact" v-model="expression.exact">
+                                        <label :for="'input-exact-'+index" class="text-regular">&nbsp;Exact</label>
                                     </div>
-                                  </div>
+
+                                    <div class="input-group-append">
+                                      <button @click="removeExpression(index)" class="btn btn-outline-secondary text-regular" type="button" style="border-radius: 0px 4px 4px 0px;">X</button>
+                                    </div>
+                                </div>
                             </div>
-                            
+
                         </div>
                         <div class="card-footer d-flex justify-content-end">
                             <button class="btn text-regular btn-primary" @click="updateTag()">Update Tag</button>
                             <button type="button" class="btn text-regular btn-danger" style="margin-left: 5px;" @click="modalOpen = false">Cancel</button>
                         </div>
                     </div>
-                
+
                 </div>
             </div>
 
@@ -129,7 +138,6 @@
     const urlswidget = {
         data() {
             return {
-                backlinks: [],
                 tags: [],
                 toBeEditedTag: '',
 
@@ -144,38 +152,25 @@
         mounted() {
             this.tags = JSON.parse(document.getElementById('tags_json').textContent);
 
-            // Counting backlinks by filters
-            this.backlinks.forEach(backlink => {
-                backlink.tags = [];
-            });
-
-            this.backlinks.forEach(backlink => {
-                this.tags.forEach(tag => {
-                    if ( backlink.backlink.includes(tag.expression) ){
-                        backlink.tags.push(tag.name);
-                    }
-                });
-            });
         },
 
         methods: {
             openEditTagModal(tag){
                 this.modalOpen= true;
-
                 this.toBeEditedTag = tag
                 console.log(tag)
             },
 
             addExpressionField(){
-                this.toBeEditedTag.expressions.push({'expression': ''});
+                this.toBeEditedTag.expressions.push( {'expression': '', 'exact': false} );
             },
 
             removeExpression(index){
-                this.toBeEditedTag.expressions.splice(index, 1);
+                this.toBeEditedTag.expressions.splice( index, 1 );
             },
 
             updateTag(){
-                
+
                 // POST request using fetch with error handling
                 const requestOptions = {
                     method: 'POST',
@@ -188,7 +183,7 @@
                         const data = await response.json();
                         alert(data.msg)
                     })
-                    
+
                     .catch(error => {
                         alert('There was an error!', error);
                     })
@@ -210,17 +205,27 @@
                 this.currentPage = page;
             },
 
-            
+
         },
         computed: {
 
-            
+
 
         }
     }
 
-    const app = Vue.createApp(urlswidget).mount('#urlswidget')
+    const app = Vue.createApp(urlswidget).mount('#urlswidget');
+
 
 </script>
+
+<script>
+    window.addEventListener("load", function(event) {
+        document.querySelectorAll('.expression-long').forEach(element => {
+            element.nextSibling.innerText = element.innerText.length <= 73 ? element.innerText : element.innerText.substring(0, 70)+'...';
+        });
+    });
+</script>
+
 
 {% endblock %}
