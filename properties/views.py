@@ -66,8 +66,8 @@ def index(request):
 @login_required(login_url="/login/")
 def properties(request):
     timezone.activate(pytz.timezone("America/Chicago"))
-    if request.method == "POST":
 
+    if request.method == "POST":
         property = request.POST["property"]
         type = request.POST["type"]
 
@@ -81,7 +81,7 @@ def properties(request):
                     property=property,
                     resource_id=resource_id,
                     owner_id=request.user.id,
-                    scrape_priority="high",
+                    priority_coverage="high",
                 )
                 property.save()
                 messages.success(request, "Property registred.")
@@ -103,13 +103,17 @@ def property(request, property_id):
 
 
 @login_required(login_url="/login/")
-def property_scrape(request, property_id):
+def property_scrape(request, property_id, type):
     timezone.activate(pytz.timezone("America/Chicago"))
 
     property = Property.objects.get(pk=property_id)
-    property.scrape_priority = "high"
+    if type == "coverage":
+        property.priority_coverage = "high"
+    if type == "backlink":
+        property.priority_backlink = "high"
+    
     property.save()
-    messages.info(request,"Property tranferred to high priority scraper, scraping will be completed in the next few minutes. Priority will reset after URLs are scraped from GSC.",)
+    messages.info(request,"Scrape priority set to high. Scraper will start within few minutes. Priority will reset after URLs are scraped from GSC.",)
     return redirect(reverse("properties"))
 
 

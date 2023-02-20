@@ -5,7 +5,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("properties/", views.properties, name="properties"),
     path("properties/<int:property_id>/", views.property, name="property"),
-    path("property/<int:property_id>/scrape", views.property_scrape, name="property_scrape"),
+    path("property/<int:property_id>/scrape/<str:type>", views.property_scrape, name="property_scrape"),
     path("property/<int:property_id>/urls/", views.property_urls, name="property_urls"),
     path("property/<int:property_id>/backlinks/", views.property_backlinks, name="property_links"),
 

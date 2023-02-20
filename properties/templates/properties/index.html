@@ -53,7 +53,7 @@
                                             {{ property.property }}
                                         </a>
                                     </td>
-                                    <td>{{ property.scrape_priority|title }}</td>
+                                    <td>CM: {{ property.priority_coverage }}, Backlink: {{ property.priority_backlink }}</td>
                                     <td>{{ property.last_scraped }}</td>
                                     <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>
 
@@ -68,18 +68,15 @@
                                                 class="btn btn-small btn-emerald">
                                                 <i class="fad fa-external-link-square-alt"></i> Backlinks
                                             </a>
+                                            
                                             <div class="position-relative fetch-buttons-container">
                                                 <span class="btn btn-small btn-emerald"><i class="fad fa-sync-alt"></i> Fetch Now</span>
                                                 <div class="fetch-buttons position-absolute" >
-                                                    <a href="{% url 'property_scrape' property.id %}"
+                                                    <a href="{% url 'property_scrape' property.id 'coverage' %}"
                                                         class="btn btn-small btn-light">
-                                                        Coverage
+                                                        Coverage & M. Usability
                                                     </a>
-                                                    <a href="{% url 'property_scrape' property.id %}"
-                                                        class="btn btn-small btn-light">
-                                                        M. Usability
-                                                    </a>
-                                                    <a href="{% url 'property_scrape' property.id %}"
+                                                    <a href="{% url 'property_scrape' property.id 'backlink' %}"
                                                         class="btn btn-small btn-light">
                                                         Backlinks
                                                     </a>

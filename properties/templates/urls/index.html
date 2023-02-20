@@ -22,7 +22,7 @@
                             of {{ property.property }}
                             {% endif %}
                             {% if property.property %}
-                            <a href="{% url 'property_scrape' property.id %}" class="btn btn-small btn-warning">
+                            <a href="{% url 'property_scrape' property.id 'coverage' %}" class="btn btn-small btn-warning">
                                 <i class="fad fa-sync-alt"></i> Fetch Now
                             </a>
                             {% endif %}
