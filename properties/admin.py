@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Property, Url, Backlink, Tag
+from .models import Property, Url, Filter, Backlink, Tag
 
 # class UrlInline(admin.TabularInline):
 #     model = Url
@@ -25,6 +25,17 @@ class UrlAdmin(admin.ModelAdmin):
     list_max_show_all = 1000
     list_per_page = 500
 
+class FilterAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "value",
+        "type"
+    )
+    #list_filter = ("property__property",)
+    list_max_show_all = 1000
+    list_per_page = 500
+
+
 class BacklinkAdmin(admin.ModelAdmin):
     list_display = (
         "backlink",
@@ -48,5 +59,6 @@ class TagAdmin(admin.ModelAdmin):
 
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(Url, UrlAdmin)
+admin.site.register(Filter, FilterAdmin)
 admin.site.register(Backlink, BacklinkAdmin)
 admin.site.register(Tag, TagAdmin)
