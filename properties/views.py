@@ -12,7 +12,7 @@ import pytz
 from django.http import JsonResponse
 import json
 
-from .models import Property, Url, Log, Filter, Backlink, Tag 
+from .models import Property, Url, Log, Filter, Backlink, Tag
 
 
 def user_login(request):
@@ -109,9 +109,13 @@ def property_scrape(request, property_id, type):
     property = Property.objects.get(pk=property_id)
     if type == "coverage":
         property.priority_coverage = "high"
+    
+    if type == "musability":
+        property.priority_musability = "high"
+
     if type == "backlink":
         property.priority_backlink = "high"
-    
+
     property.save()
     messages.info(request,"Scrape priority set to high. Scraper will start within few minutes. Priority will reset after URLs are scraped from GSC.",)
     return redirect(reverse("properties"))
@@ -185,7 +189,7 @@ def tags(request):
 @login_required(login_url="/login/")
 def create_tag(request):
     timezone.activate(pytz.timezone("America/Chicago"))
-    
+
     if request.method == "POST":
         data = json.loads(request.body)
 
@@ -195,6 +199,12 @@ def create_tag(request):
         property = data['property']
 
         if name and expressions and scope:
+
+            #check for match type selected or not
+            for expression in expressions:
+                if expression['exact'] == '':
+                    return JsonResponse({"msg":"Match type should be selected for all expressions"}, status=400)
+
             try:
                 tag = Tag(
                     name=name,
@@ -209,7 +219,7 @@ def create_tag(request):
                 response = "Could not add the tag, error: "+str(e)
         else:
             response = "Tag could not be added, check if all fields are satisfied."
-        
+
         return JsonResponse({"msg":response}, status=201)
 
 
@@ -238,7 +248,7 @@ def update_tag(request):
                 response = "Could not add the tag, error: "+str(e)
         else:
             response = "Tag could not be updated, check if all fields are satisfied."
-        
+
         return JsonResponse({"msg":response}, status=201)
 
 
@@ -255,15 +265,19 @@ def delete_tag(request, tag_id):
 @login_required(login_url="/login/")
 def add_expression_to_tag(request):
     timezone.activate(pytz.timezone("America/Chicago"))
-    
+
     if request.method == "POST":
         data = json.loads(request.body)
-        
+
         expressions = data['expressions']
         tag_ids = data['tag_ids']
         property = data['property']
 
-        if  expressions and tag_ids and property:
+        if expressions and tag_ids and property:
+
+            for expression in expressions:
+                if expression['exact'] == '':
+                    return JsonResponse({"msg":"Match type should be selected for all expressions"}, status=400)
 
             try:
                 for tag_id in tag_ids:

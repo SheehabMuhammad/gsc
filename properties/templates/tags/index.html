@@ -62,12 +62,12 @@
                                     <div class="expression-long" style="display: none"><span v-for="expression in  tag.expressions">|{{ expression.expression }}| </span></div>
                                     <div class="expression-short"></div>
                                 </td>
-                                
+
                                 <td>{{ tag.scope }}</td>
 
                                 <td>
                                     <button @click="openEditTagModal(tag)" class="btn btn-small btn-emerald gap-right">Edit</button>
-                                    <a :href="'/tag/'+tag.id+'/delete'" class="btn btn-small btn-danger">Delete</a>
+                                    <a :href="'/tag/'+tag.id+'/delete'" onclick="return confirm('Are you sure you want to delete the tag?')" class="btn btn-small btn-danger">Delete</a>
                                 </td>
 
                             </tr>
@@ -104,10 +104,11 @@
                                 <div class="input-group mb-3" v-for="(expression, index) in toBeEditedTag.expressions">
                                     <input name="expression" class="form-control text-regular" type="text" id="expression-2" placeholder="yelp.com or yellowpage or any keyword" v-model="expression.expression"/>
 
-                                    <div class="form-control text-regular" style="max-width: 80px;">
-                                        <input type="checkbox" class="input-exact" :id="'input-exact-'+index" :checked="expression.exact" v-model="expression.exact">
-                                        <label :for="'input-exact-'+index" class="text-regular">&nbsp;Exact</label>
-                                    </div>
+                                    <select class="form-select text-regular" v-model="expression.exact" aria-label=".form-select" style="max-width: 130px;">
+                                        <option value="" disabled selected>Select match</option>
+                                        <option :value="true">Exact</option>
+                                        <option :value="false">Broad</option>
+                                    </select>
 
                                     <div class="input-group-append">
                                       <button @click="removeExpression(index)" class="btn btn-outline-secondary text-regular" type="button" style="border-radius: 0px 4px 4px 0px;">X</button>

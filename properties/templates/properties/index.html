@@ -31,10 +31,9 @@
                             <thead class="list-header">
                                 <tr>
                                     <th><span>#</span></th>
-
-                                    <th><span>Domain/URL Prefix</span></th>
-                                    <th><span>Scrape Priority</span></th>
-                                    <th><span>Last Scrape</span></th>
+                                    <th>Domain/URL Prefix<br><span style="font-size: 12px;">Similar to GSC</span></th>
+                                    <th>Scrape Priority<br><span style="font-size: 12px;">(Coverage | Backlink)</span></th>
+                                    <th>Last Scraped<br><span style="font-size: 12px;">(Coverage | Backlink)</span></th>
                                     <th><span>Registered</span></th>
                                     <th><span>Actions</span></th>
                                 </tr>
@@ -53,8 +52,8 @@
                                             {{ property.property }}
                                         </a>
                                     </td>
-                                    <td>CM: {{ property.priority_coverage }}, Backlink: {{ property.priority_backlink }}</td>
-                                    <td>{{ property.last_scraped }}</td>
+                                    <td>{{ property.priority_coverage }} | {{ property.priority_backlink }}</td>
+                                    <td>{{ property.last_scraped_coverage }} | {{ property.last_scraped_coverage }}</td>
                                     <td>{{ property.created_at|date:"m/d/y, h:ia" }}</td>
 
                                     <td>
