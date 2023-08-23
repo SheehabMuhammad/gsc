@@ -103,16 +103,12 @@
                                     <span class="badge bg-secondary">Tags</span>
                                 </th>
 
-                                <th @click="updateSort('authority')" scope="col" style="cursor: pointer;">
-                                    <span class="badge bg-secondary">Domain Authority <i class="fad fa-sort-circle text-emerald"></i></span>
-                                </th>
-
-                                <th @click="updateSort('crawled_at')" scope="col" style="cursor: pointer;">
-                                    <span class="badge bg-secondary">GSC Crawled At<i class="fad fa-sort-circle text-emerald"></i></span>
+                                <th @click="updateSort('status')" scope="col" style="cursor: pointer;">
+                                    <span class="badge bg-secondary">Status <i class="fad fa-sort-circle text-emerald"></i></span>
                                 </th>
 
                                 <th @click="updateSort('created_at')" scope="col" style="cursor: pointer;">
-                                    <span class="badge bg-secondary">First Collected At <i class="fad fa-sort-circle text-emerald"></i></span>
+                                    <span class="badge bg-secondary">History <i class="fad fa-sort-circle text-emerald"></i></span>
                                 </th>
                             </tr>
                         </thead>
@@ -134,14 +130,41 @@
                                     <span class="badge bg-emerald" style="margin-left: 3px;" @click="openAddToTagModal([backlink.backlink])">+</span>
                                 </td>
 
-                                <td>{{ backlink.authority }}</td>
-                                <td>{{ formatDate(backlink.crawled_at) }}</td>
-                                <td>{{ formatDate(backlink.created_at) }}</td>
+                                <td class="status-td sm-tooltip">
+                                    {{ backlink.status ? '✅' : '🚫' }}
+                                    <span v-if="backlink.status" class="sm-tooltiptext">In GSC Currently</span>
+                                    <span v-if="!backlink.status" class="sm-tooltiptext">Not In GSC Currently</span>
+                                </td>
+
+                                <td class="history-dropdown-container">{{ formatDate(backlink.crawled_at) }} <i class="fad fa-chevron-down text-emerald"></i>
+                                    <div class="history-dropdown text-normal">
+                                        <ul>
+                                            <li class="">
+                                                <span class="text-emerald">{{ formatDate(backlink.created_at) }} - Backlink First Found In GSC </span>
+                                                <span class="sm-tooltip"><i class="fas fa-eye"></i><span class="sm-tooltiptext top-30 right-0">"GSC Last Crawled" Date Is {{ formatDate(backlink.first_crawled_at) }}</span></span>
+                                            </li>
+
+                                            <li v-for="history in backlink.history">
+                                                <span class="text-light-red">{{ history.new_value == 0 ? formatDate(history.created_at)+' - Backlink No Longer Found In GSC': '' }}</span>
+                                                <span v-if="history.new_value == 1" class="text-emerald">{{ formatDate(history.created_at) }} - Backlink Found Again In GSC'
+                                                    <span class="sm-tooltip">
+                                                        <i class="fas fa-eye"></i>
+                                                        <span class="sm-tooltiptext top-30 right-0">"GSC Last Crawled" Date Is  {{ formatDate(history.crawled_at) }}</span>
+                                                    </span>
+                                                </span>
+
+                                                <span v-if="history.new_value.length > 1" class="text-warning">{{ formatDate(history.created_at) }} "GSC Last Crawled" Date Changed
+                                                    <span class="sm-tooltip"><i class="fas fa-eye"></i><span class="sm-tooltiptext top-30 right-0">Date Changed from {{ formatDate(history.old_value) }} to {{ formatDate(history.new_value) }}</span></span>
+                                                </span>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
             </div>
 
             <div class="widget-footer">
@@ -481,9 +504,17 @@
                 });
             },
 
-            formatDate(value) {
-                if (value) {
-                    return new Date(String(value)).toLocaleString()
+            formatDate(date) {
+                if (date) {
+                    var d = new Date(date),
+                        month = '' + (d.getMonth() + 1),
+                        day = '' + d.getDate(),
+                        year = d.getFullYear();
+                    if (month.length < 2)
+                        month = '0' + month;
+                    if (day.length < 2)
+                        day = '0' + day;
+                    return [month, day, year].join('/');
                 }
                 return "None";
             },

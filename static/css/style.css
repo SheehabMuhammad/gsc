@@ -88,6 +88,10 @@ label  {
     font-size: 0.75rem !important;
 }
 
+.text-normal{
+    color: #646A75;
+    font-size: 0.875rem !important;
+}
 .text-gray {
     color: #9298A3;
 }
@@ -103,14 +107,16 @@ a.text-emerald:hover {
 .text-light-blue{
     color: #3ACBE9;
 }
-
+.text-light-red {
+    color: #FF5C5C;
+}
 
 .Indexed,
 .Usable {
     color: green;
 }
 
-.Excluded, .Not.listed.as.mobile.friendly {
+.Excluded, .Not.listed.as.mobile.friendly, .No.longer.in.GSC {
     color: #888;
 }
 
@@ -644,4 +650,124 @@ ul.ks-cboxtags li input[type="checkbox"]:focus + label {
 
 .btn.btn-outline-secondary {
     border: 1px solid #ced4da;
+}
+
+
+.tiny-widget-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow: hidden;
+    color: #fff;
+}
+
+.tiny-widget {
+    min-width: 80px;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(38, 201, 148, 0.8);
+    border-radius: 10px;
+}
+
+.tiny-widget .tiny-widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.tiny-widget i {
+    opacity: 0.8;
+}
+
+.tiny-widget .status {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0px;
+    text-align: right;
+}
+
+.tiny-widget .title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+
+.tiny-widget .info {
+    font-size: 10px;
+    margin-bottom: 0px;
+
+}
+
+
+
+.status-td {
+    text-align: center;
+    width: 85px;
+}
+
+.history-dropdown-container {
+    width: 110px;
+    position: relative;
+
+}
+.history-dropdown {
+    position: absolute;
+    background: #FFF;
+    border: 1px solid #F0F0F0;
+    border-radius: 5px;
+    display: none;
+    z-index: 1;
+    padding: 10px 20px;
+    right: 10px;
+    box-shadow: 0px 0px 15px 0px #F0F0F0;
+}
+
+.history-dropdown ul {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.history-dropdown ul li{
+    padding: 5px 0;
+}
+
+.history-dropdown-container:hover .history-dropdown {
+    display: block;
+    width: max-content;
+}
+
+
+.sm-tooltip {
+    position: relative;
+    border-bottom: 1px dotted black;
+}
+
+.sm-tooltip .sm-tooltiptext {
+    visibility: hidden;
+    width: max-content;
+
+    background-color: #FFF;
+    color: gray;
+    text-align: center;
+    border-radius: 6px;
+    padding: 3px 5px;
+    border: 1px solid rgba(0,0,0, 0.1);
+    box-shadow: 0px 0px 15px 0px #F0F0F0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+}
+
+.top-30{
+    top: 30px !important;
+}
+.right-0 {
+    right: 0 !important;
+}
+.sm-tooltip:hover .sm-tooltiptext {
+    visibility: visible;
 }

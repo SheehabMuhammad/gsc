@@ -133,23 +133,23 @@
                                     </th>
 
                                     <th @click="sort('crawled_at')" scope="col" style="cursor: pointer;">
-                                        <span class="badge bg-secondary">Crawled <i class="fad fa-sort-circle text-emerald"></i></span>
+                                        <span class="badge bg-secondary">GSC Crawled <i class="fad fa-sort-circle text-emerald"></i></span>
                                     </th>
 
-                                    <th @click="sort('mu_type')" scope="col" style="cursor: pointer;">
+                                    <!-- <th @click="sort('mu_type')" scope="col" style="cursor: pointer;">
                                         <span class="badge bg-secondary">Mobile Usablity Type <i class="fad fa-sort-circle text-emerald"></i></span>
-                                    </th>
+                                    </th> -->
 
                                     <th @click="sort('mu_status')" scope="col" style="cursor: pointer;">
                                         <span class="badge bg-secondary">Mobile Usablity Status <i class="fad fa-sort-circle text-emerald"></i></span>
                                     </th>
 
                                     <th @click="sort('detected_at')" scope="col" style="cursor: pointer;">
-                                        <span class="badge bg-secondary">Detected <i class="fad fa-sort-circle text-emerald"></i></span>
+                                        <span class="badge bg-secondary">GSC MU Detected <i class="fad fa-sort-circle text-emerald"></i></span>
                                     </th>
 
                                     <th @click="sort('created_at')" scope="col" style="cursor: pointer;">
-                                        <span class="badge bg-secondary">Created At <i class="fad fa-sort-circle text-emerald"></i></span>
+                                        <span class="badge bg-secondary">First Scraped from GSC<i class="fad fa-sort-circle text-emerald"></i></span>
                                     </th>
 
 
@@ -169,11 +169,11 @@
                                     <td>{{ url.c_status }}</td>
                                     <td>{{ formatDate(url.crawled_at) }}</td>
 
-                                    <td>{{ url.mu_type }}</td>
+                                    <!-- <td>{{ url.mu_type }}</td> -->
                                     <td>{{ url.mu_status }}</td>
                                     <td>{{ formatDate(url.detected_at) }}</td>
 
-                                    <td>{{ formatDate(url.created_at) }}</td>
+                                    <td>{{ formatDateTime(url.created_at) }}</td>
                                 </tr>
 
                             </tbody>
@@ -276,9 +276,16 @@
 
             formatDate(value) {
                 if (value) {
+                    return new Date(String(value)).toLocaleDateString();
+                }
+                return "N/A";
+            },
+
+            formatDateTime(value) {
+                if (value) {
                     return new Date(String(value)).toLocaleString()
                 }
-                return "None";
+                return "N/A";
             },
 
             sort(key) {
@@ -329,18 +336,28 @@
                 document.body.appendChild(link);
 
                 link.click();
-            }
+            },
+            putNoLongerInGSCToBottom(filters) {
+                // Add a check to ensure that filters is an array and is not empty
+                if (!Array.isArray(filters) || filters.length === 0) {
+                    return [];
+                }
+                const noLongerInGSC = filters.find(filter => filter && filter.value === 'No longer in GSC');
+                const otherFilters = filters.filter(filter => filter && filter.value !== 'No longer in GSC');
+                return [...otherFilters, noLongerInGSC];
+            },
+
         },
         computed: {
 
             c_status_filters: function () {
-                return _.orderBy( this.filters.filter(filter => filter.name === 'c_status'), ['type', 'count'], ['asc', 'desc']);
+                return this.putNoLongerInGSCToBottom(_.orderBy( this.filters.filter(filter => filter.name === 'c_status'), ['type', 'count'], ['asc', 'desc']));
             },
             c_type_filters: function () {
-                return _.orderBy( this.filters.filter(filter => filter.name === 'c_type'), ['type', 'count'], ['asc', 'desc']);
+                return this.putNoLongerInGSCToBottom(_.orderBy( this.filters.filter(filter => filter.name === 'c_type'), ['type', 'count'], ['asc', 'desc']));
             },
             mu_status_filters: function () {
-                return _.orderBy( this.filters.filter(filter => filter.name === 'mu_status'), ['type', 'count'], ['desc', 'desc']);
+                return this.putNoLongerInGSCToBottom(_.orderBy( this.filters.filter(filter => filter.name === 'mu_status'), ['type', 'count'], ['desc', 'desc']));
             },
 
             filteredUrls: function() {

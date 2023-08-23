@@ -10,6 +10,89 @@
         <div class="col-md-6">
 
             <div class="widget mb-4">
+                <div class="widget-header">
+                    <div class="labels">
+                        <h3 class="title text-lato">Scraper Health</h3>
+                        <span class="text-tiny text-secondary">Overview of how scraper is functioning.</span>
+                    </div>
+
+                    <div class="actions">
+                        <a href="{% url 'index' %}" class="btn btn-small btn-emerald">
+                            <i class="fas fa-retweet"></i> Refresh
+                        </a>
+                        <a href="{% url 'index' %}" class="btn btn-small btn-danger">
+                            <i class="fa fa-bin"></i> Reset
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="widget-content">
+                    <div class="tiny-widget-container">
+                        <div class="tiny-widget" style="background-color: rgba(249, 91, 126, 0.4);">
+                            <div class="tiny-widget-header">
+                                <i class="fas fa-database"></i>
+                                <div class="status">{{ health_percent.db_manager }}%</div>
+                            </div>
+                            <h4 class="title">DB Manager</h4>
+                            <div class="info">
+                                {% if health.db_manager == 0 %}
+                                    Running...
+                                {% else %}
+                                    {{ health.db_manager }} warnings
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="tiny-widget" style="background-color: rgba(38, 201, 148, 0.8);">
+                            <div class="tiny-widget-header">
+                                <i class="fas fa-chart-pie"></i>
+                                <div class="status">{{ health_percent.coverage }}%</div>
+                            </div>
+                            <h4 class="title">Coverage Scraper</h4>
+                            <div class="info">
+                                {% if health.coverage == 0 %}
+                                    Running...
+                                {% else %}
+                                    {{ health.coverage }} warnings
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="tiny-widget" style="background-color: #FE957B;">
+                            <div class="tiny-widget-header">
+                                <i class="fas fa-mobile"></i>
+                                <div class="status">{{ health_percent.mobile_usability }}%</div>
+                            </div>
+                            <h4 class="title">MU Scraper</h4>
+                            <div class="info">
+                                {% if health.mobile_usability == 0 %}
+                                    Running...
+                                {% else %}
+                                    {{ health.mobile_usability }} warnings
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="tiny-widget" style="background-color: #BE82FF;">
+                            <div class="tiny-widget-header">
+                                <i class="fas fa-link"></i>
+                                <div class="status">{{ health_percent.backlink }}%</div>
+                            </div>
+                            <h4 class="title">Backlink Scraper</h4>
+                            <div class="info">
+                                {% if health.backlink == 0 %}
+                                    Running...
+                                {% else %}
+                                    {{ health.backlink }} warning(s)
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget mb-4">
 
                 <div class="widget-header">
                     <div class="labels">
@@ -29,12 +112,17 @@
                 </div>
 
                 <script>
+
                     dates = [
-                        {% for url in urls_by_date %} '{{ url.day|date:"b d"|title }}', {% endfor %}
+                        {% for date, count in urls_by_date %} '{{ date|date:"b d"|title }}', {% endfor %}
                     ];
 
-                    count = [
-                        {% for url in urls_by_date %} '{{ url.created_count }}', {% endfor %}
+                    coverage_count = [
+                        {% for date, count in urls_by_date %} '{{ count }}', {% endfor %}
+                    ];
+
+                    backlink_count = [
+                        {% for date, count in backlinks_by_date %} '{{ count }}', {% endfor %}
                     ];
 
                     // Chart in Dashboard version 1
@@ -98,7 +186,18 @@
                                     itemStyle: {
                                         color: '#26C994'
                                     },
-                                    data: count
+                                    data: coverage_count
+                                },
+                                {
+                                    name: 'New Backlinks',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'circle',
+                                    showSymbol: false,
+                                    itemStyle: {
+                                        color: '#BE82FF'
+                                    },
+                                    data: backlink_count
                                 }
                             ]
                         };
@@ -108,10 +207,7 @@
 
                     }
                 </script>
-
             </div>
-
-
 
         </div> <!-- main contents end-->
 
@@ -145,7 +241,7 @@
 
                                     <td class="text-emerald"
                                         style="max-width: 180px;overflow: hidden;text-overflow: ellipsis;">
-                                        {{ log.property }}</td>
+                                        {{ log.property }}<br><span class="text-warning">{{log.status}}</span></td>
                                     <td>Type: {{ log.type }}</td>
                                     <td>Scraped URLs: {{ log.num_urls }}</td>
                                     <td>Duration: {{ log.time_taken }} sec</td>
@@ -176,3 +272,61 @@
 </div>
 
 {% endblock %}
+
+
+
+<div class="widget-content">
+    <div class="tiny-widget-container">
+        <div class="tiny-widget" style="background-color: rgba(249, 91, 126, 0.4);">
+            <div class="tiny-widget-header">
+                <i class="fas fa-database"></i>
+                <div class="status">100%</div>
+            </div>
+            <h4 class="title">DB Manager</h4>
+            <div class="info"> Warnings</div>
+        </div>
+
+        <div class="tiny-widget" style="background-color: rgba(38, 201, 148, 0.8);">
+            <div class="tiny-widget-header">
+                <i class="fas fa-chart-pie"></i>
+                <div class="status">100%</div>
+            </div>
+            <h4 class="title">Coverage Scraper</h4>
+            <div class="info">Running...</div>
+        </div>
+
+        <div class="tiny-widget" style="background-color: #FE957B;">
+            <div class="tiny-widget-header">
+                <i class="fas fa-mobile"></i>
+                <div class="status">100%</div>
+            </div>
+            <h4 class="title">MU Scraper</h4>
+            <div class="info">5 Warnings</div>
+        </div>
+
+        <div class="tiny-widget" style="background-color: #BE82FF;">
+            <div class="tiny-widget-header">
+                <i class="fas fa-link"></i>
+                <div class="status">100%</div>
+            </div>
+            <h4 class="title">Backlink Scraper</h4>
+            <div class="info">Running...</div>
+        </div>
+
+    </div>
+</div>
+
+
+I have this code in front-end of the django app, that I will render with vue.js
+
+Do you see placeholder data?
+
+I want to replace them with real data.
+
+if there is no error for a type then it should show “Running", if there is any then it should show Number warning like "5 warnings” 
+
+I do you see 100%? I want to update them with real data too.
+
+I am planning that there are 10 properties in my app, so I will divide 100 by 10 and for every type error that will decrease by the result of the division.
+
+can you write the code for me?

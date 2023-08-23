@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Property(models.Model):
@@ -27,7 +28,7 @@ class Property(models.Model):
 
 class Url(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    url = models.URLField()
+    url = models.CharField(max_length=512)
     c_type = models.CharField(blank=True, default="Not listed", null=True, max_length=255)
     c_status = models.CharField(blank=True, default="Not listed", null=True, max_length=255)
     crawled_at = models.DateTimeField(default=None, null=True)
@@ -67,8 +68,10 @@ class Filter(models.Model):
 class Backlink(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     backlink = models.CharField(max_length=512)
+    status = models.BooleanField(default=1)
     authority = models.IntegerField(default=0, blank=True, null=True)
     crawled_at = models.DateTimeField(default=None, null=True)
+    first_crawled_at = models.DateTimeField(default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -81,6 +84,18 @@ class Backlink(models.Model):
                 fields=["property", "backlink"], name="unique property backlink constraint"
             )
         ]
+
+
+class BacklinkHistory(models.Model):
+    backlink = models.ForeignKey(Backlink, on_delete=models.CASCADE)
+    field_name = models.CharField(max_length=255)
+    old_value = models.CharField(max_length=255)
+    new_value = models.CharField(max_length=255)
+    crawled_at = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.backlink
 
 
 class Tag(models.Model):
@@ -109,3 +124,10 @@ class Log(models.Model):
     status = models.CharField(max_length=255)
     scrape_priority = models.CharField(max_length=100, default="low")
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Health(models.Model):
+    type = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    message = models.CharField(max_length=512, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
